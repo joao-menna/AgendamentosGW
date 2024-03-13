@@ -1,0 +1,12 @@
+O projeto deve ser criado com Vite
+
+Dependências:
+- react             - library de visualização
+- react-router-dom  - library para roteamento
+- react-redux       - library para gerenciamento de estado
+- @reduxjs/toolkit  - facilitador para o gerenciamento de estado com redux
+- @emotion/styled   - library para usar a sintaxe do styled-components
+- @emotion/react    - library para estilizar manualmente
+
+DevDependências:
+- eslint            - forçar guia de estilo
