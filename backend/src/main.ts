@@ -1,10 +1,21 @@
-import getServer from "./functions/getServer";
+import { config } from 'dotenv'
+import getServer from './functions/getServer'
 
-getServer().then(async (server) => {
-  server.listen({
+config()
+
+async function main (): Promise<void> {
+  const server = await getServer()
+
+  await server.listen({
     host: '0.0.0.0',
-    port: process.env.PORT
+    port: parseInt(process.env.PORT ?? '8080')
   })
-}).catch((err) => {
-  console.error(err)
-})
+}
+
+main()
+  .then(() => {
+    console.log(`Server running in port ${process.env.PORT}`)
+  })
+  .catch((err) => {
+    console.error(err)
+  })
