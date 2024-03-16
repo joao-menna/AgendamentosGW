@@ -6,7 +6,9 @@ Dependências:
 - bcrypt            - encriptar senhas
 - drizzle-orm       - ORM para conectar no banco
 - drizzle-kit       - gerar migrations
-- dotenv
+- drizzle-zod       - integrar drizzle com zod
+- dotenv            - variáveis de ambiente
+- zod               - validação de esquema
 
 DevDependências:
 - @types/node       - definição de tipos para o node
