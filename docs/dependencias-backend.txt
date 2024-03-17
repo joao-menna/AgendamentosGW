@@ -9,10 +9,13 @@ Dependências:
 - drizzle-zod       - integrar drizzle com zod
 - dotenv            - variáveis de ambiente
 - zod               - validação de esquema
+- pg                - conectar no banco de dados PostgreSQL, usando esse no
+                      lugar do Postgres.JS pois não quero pooling
 
 DevDependências:
 - @types/node       - definição de tipos para o node
 - @types/jest       - definição de tipos para a biblioteca de testes
+- @types/pg         - definição de tipos para a biblioteca de conexão com banco
 - typescript        - typescript porque ninguém merece trabalhar com js
 - nodemon           - rodar projeto facilmente
 - ts-node           - rodar projeto typescript com nodemon
