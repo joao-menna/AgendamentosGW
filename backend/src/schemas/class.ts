@@ -1,4 +1,5 @@
 import { integer, pgTable, serial, text, timestamp } from 'drizzle-orm/pg-core'
+import { createInsertSchema, createSelectSchema } from 'drizzle-zod'
 import { userTable } from './user'
 
 export const classTable = pgTable('class', {
@@ -9,3 +10,6 @@ export const classTable = pgTable('class', {
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow()
 })
+
+export const selectClassSchema = createSelectSchema(classTable)
+export const insertClassSchema = createInsertSchema(classTable)

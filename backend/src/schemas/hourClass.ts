@@ -1,6 +1,7 @@
 import { integer, pgTable, serial, timestamp } from 'drizzle-orm/pg-core'
-import { hourTable } from './hour'
+import { createInsertSchema, createSelectSchema } from 'drizzle-zod'
 import { classResourceTable } from './classResource'
+import { hourTable } from './hour'
 
 export const hourClassTable = pgTable('hour_class', {
   id: serial('id').primaryKey(),
@@ -10,3 +11,6 @@ export const hourClassTable = pgTable('hour_class', {
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow()
 })
+
+export const selectHourClassSchema = createSelectSchema(hourClassTable)
+export const insertHourClassSchema = createInsertSchema(hourClassTable)
