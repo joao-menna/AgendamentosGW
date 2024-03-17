@@ -7,6 +7,11 @@ export default async function userRoutes (fastify: FastifyInstance): Promise<voi
     return await userController.getAll(req, rep)
   })
 
+  fastify.get('/api/v1/user/email', async (req, rep) => {
+    const userController = new UserController()
+    return await userController.getOneByEmail(req, rep)
+  })
+
   fastify.get('/api/v1/user/:id', async (req, rep) => {
     const userController = new UserController()
     return await userController.getOne(req, rep)
@@ -22,14 +27,14 @@ export default async function userRoutes (fastify: FastifyInstance): Promise<voi
     return await userController.updateOne(req, rep)
   })
 
+  fastify.put('/api/v1/user/self', async (req, rep) => {
+    const userController = new UserController()
+    return await userController.updateSelf(req, rep)
+  })
+
   fastify.delete('/api/v1/user/:id', async (req, rep) => {
     const userController = new UserController()
     return await userController.deleteOne(req, rep)
-  })
-
-  fastify.post('/api/v1/user/forgot-password', async (req, rep) => {
-    const userController = new UserController()
-    return await userController.forgotPassword(req, rep)
   })
 
   fastify.post('/api/v1/user/login', async (req, rep) => {
