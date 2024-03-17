@@ -6,8 +6,9 @@ import { resolve } from 'path'
 config()
 
 async function main (): Promise<void> {
-  const db = await getDB()
+  const { db, client } = await getDB()
   await migrate(db, { migrationsFolder: resolve(__dirname, '..', '..', 'drizzle') })
+  await client.end()
 }
 
 main()

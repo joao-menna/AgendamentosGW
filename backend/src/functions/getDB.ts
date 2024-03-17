@@ -1,7 +1,12 @@
 import { NodePgDatabase, drizzle } from 'drizzle-orm/node-postgres'
 import { Client } from 'pg'
 
-export default async function getDB (): Promise<NodePgDatabase<Record<string, never>>> {
+interface ReturnType {
+  db: NodePgDatabase<Record<string, never>>
+  client: Client
+}
+
+export default async function getDB (): Promise<ReturnType> {
   const client = new Client({
     host: process.env.PGHOST,
     database: process.env.PGDATABASE,
@@ -13,5 +18,8 @@ export default async function getDB (): Promise<NodePgDatabase<Record<string, ne
   await client.connect()
 
   const db = drizzle(client)
-  return db
+  return {
+    db,
+    client
+  }
 }

@@ -1,7 +1,7 @@
 import { FastifyInstance } from 'fastify'
 import { ScheduleController } from '../controllers/schedule'
 
-export default async function schedule (fastify: FastifyInstance): Promise<void> {
+export default async function scheduleRoutes (fastify: FastifyInstance): Promise<void> {
   fastify.get('/api/v1/schedule', async (req, rep) => {
     const scheduleController = new ScheduleController()
     return await scheduleController.getAll(req, rep)
