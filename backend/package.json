@@ -4,6 +4,10 @@
   "description": "Backend do AgendamentosGW",
   "license": "GPL-3.0-only",
   "scripts": {
+    "dev": "nodemon ./src/main.ts",
+    "start": "ts-node ./src/main.ts",
+    "migrate": "ts-node ./src/scripts/migrate.ts",
+    "generate": "drizzle-kit generate:pg",
     "test": "jest --coverage"
   },
   "dependencies": {
