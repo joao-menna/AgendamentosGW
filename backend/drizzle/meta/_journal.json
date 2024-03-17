@@ -8,6 +8,13 @@
       "when": 1710639840865,
       "tag": "0000_tearful_prodigy",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1710708580281,
+      "tag": "0001_chubby_surge",
+      "breakpoints": true
     }
   ]
 }

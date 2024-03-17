@@ -1,5 +1,5 @@
 import { insertUserSchema, loginUserSchema, selectUserSchema, updateUserSchema, userTable } from '../schemas/user'
-import { INEXISTENT_USER, PASSWORD_SALT_ROUNDS, WRONG_PASSWORD } from '../constants/passwords'
+import { EMAIL_EXISTENT, INEXISTENT_USER, PASSWORD_SALT_ROUNDS, WRONG_PASSWORD } from '../constants/passwords'
 import getUserFromToken from '../functions/getUserFromToken'
 import { FastifyReply, FastifyRequest } from 'fastify'
 import { UNAUTHORIZED } from '../constants/tokens'
@@ -212,7 +212,18 @@ export class UserController {
       const hashedPassword = bcrypt.hashSync(body.password, PASSWORD_SALT_ROUNDS)
       body.password = hashedPassword
 
-      const insertedUser = await db.insert(userTable).values(body).returning()
+      const insertedUser = await db
+        .insert(userTable)
+        .values(body)
+        .onConflictDoNothing({ target: userTable.email })
+        .returning()
+
+      if (insertedUser.length === 0) {
+        await rep.code(400).send({
+          message: EMAIL_EXISTENT
+        })
+        return await rep
+      }
 
       // Removing password hash from insertedUser to send
       const sendUser = {
@@ -267,7 +278,7 @@ export class UserController {
     }
 
     try {
-      body = insertUserSchema.parse(req.body)
+      body = updateUserSchema.parse(req.body)
     } catch (err: any) {
       await rep.code(422).send(JSON.parse(err as string))
       return await rep
@@ -314,7 +325,7 @@ export class UserController {
           email: updatedUser[0].email,
           type: updatedUser[0].type,
           createdAt: updatedUser[0].createdAt,
-          updatedAt: updatedUser[0].name
+          updatedAt: updatedUser[0].updatedAt
         }
 
         await rep.send(sendUser)
@@ -443,7 +454,21 @@ export class UserController {
 
     try {
       const deletedUser = await db.delete(userTable).where(eq(userTable.id, idInt)).returning()
-      await rep.send(deletedUser)
+
+      if (deletedUser.length > 0) {
+        const sendUser = {
+          id: deletedUser[0].id,
+          name: deletedUser[0].name,
+          email: deletedUser[0].email,
+          type: deletedUser[0].type,
+          createdAt: deletedUser[0].createdAt,
+          updatedAt: deletedUser[0].updatedAt
+        }
+
+        await rep.send(sendUser)
+      } else {
+        await rep.send({})
+      }
     } catch (err) {
       await rep.code(500).send(err)
     } finally {
