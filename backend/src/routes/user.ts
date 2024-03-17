@@ -26,4 +26,9 @@ export default async function user (fastify: FastifyInstance): Promise<void> {
     const userController = new UserController()
     return await userController.deleteOne(req, rep)
   })
+
+  fastify.post('/api/v1/user/login', async (req, rep) => {
+    const userController = new UserController()
+    return await userController.login(req, rep)
+  })
 }

@@ -1,24 +1,26 @@
 Dependências:
-- fastify           - web framework
-- @fastify/autoload - auto carregar plugins do fastify
-- @fastify/static   - servir arquivos estaticamente
-- @fastify/cors     - Cross-Origin-Resource-Sharing
-- bcrypt            - encriptar senhas
-- drizzle-orm       - ORM para conectar no banco
-- drizzle-kit       - gerar migrations
-- drizzle-zod       - integrar drizzle com zod
-- dotenv            - variáveis de ambiente
-- zod               - validação de esquema
-- pg                - conectar no banco de dados PostgreSQL, usando esse no
-                      lugar do Postgres.JS pois não quero pooling
+- fastify             - web framework
+- @fastify/autoload   - auto carregar plugins do fastify
+- @fastify/static     - servir arquivos estaticamente
+- @fastify/cors       - Cross-Origin-Resource-Sharing
+- jsonwebtoken        - autenticação por token
+- bcrypt              - encriptar senhas
+- drizzle-orm         - ORM para conectar no banco
+- drizzle-kit         - gerar migrations
+- drizzle-zod         - integrar drizzle com zod
+- dotenv              - variáveis de ambiente
+- zod                 - validação de esquema
+- pg                  - conectar no banco de dados PostgreSQL, usando esse no
+                        lugar do Postgres.JS pois não quero pooling
 
 DevDependências:
-- @types/node       - definição de tipos para o node
-- @types/jest       - definição de tipos para a biblioteca de testes
-- @types/pg         - definição de tipos para a biblioteca de conexão com banco
-- typescript        - typescript porque ninguém merece trabalhar com js
-- nodemon           - rodar projeto facilmente
-- ts-node           - rodar projeto typescript com nodemon
-- jest              - biblioteca de testes, dependência do ts-jest
-- ts-jest           - biblioteca de testes, versão typescript
-- eslint            - força o estilo do código
+- @types/node         - definição de tipos para o node
+- @types/jsonwebtoken - definição de tipos para o jsonwebtoken
+- @types/jest         - definição de tipos para a biblioteca de testes
+- @types/pg           - definição de tipos para a biblioteca de conexão com banco
+- typescript          - typescript porque ninguém merece trabalhar com js
+- nodemon             - rodar projeto facilmente
+- ts-node             - rodar projeto typescript com nodemon
+- jest                - biblioteca de testes, dependência do ts-jest
+- ts-jest             - biblioteca de testes, versão typescript
+- eslint              - força o estilo do código
