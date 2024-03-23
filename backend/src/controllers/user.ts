@@ -534,7 +534,7 @@ export class UserController {
       },
       process.env.JWT_PRIVATE_KEY ?? 'fixed key',
       {
-        expiresIn: '15h'
+        expiresIn: '24h'
       }
     )
 
