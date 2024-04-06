@@ -33,10 +33,16 @@ export class SystemController {
         updatedAt: owner.updatedAt
       }
 
-      await rep.send({
-        firstTime: isFirstTime,
-        ...sendOwner
-      })
+      if (isFirstTime) {
+        await rep.send({
+          firstTime: isFirstTime,
+          ...sendOwner
+        })
+      } else {
+        await rep.send({
+          firstTime: isFirstTime
+        })
+      }
     } else {
       isFirstTime = true
       await rep.send({

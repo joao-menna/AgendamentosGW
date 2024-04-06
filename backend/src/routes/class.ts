@@ -26,4 +26,19 @@ export default async function classRoutes (fastify: FastifyInstance): Promise<vo
     const classController = new ClassController()
     return await classController.deleteOne(req, rep)
   })
+
+  fastify.get('/api/v1/class/:id/resource', async (req, rep) => {
+    const classController = new ClassController()
+    return await classController.getAllResource(req, rep)
+  })
+
+  fastify.post('/api/v1/class/:id/resource', async (req, rep) => {
+    const classController = new ClassController()
+    return await classController.insertOneResource(req, rep)
+  })
+
+  fastify.delete('/api/v1/class/:id/resource/:resourceId', async (req, rep) => {
+    const classController = new ClassController()
+    return await classController.deleteOneResource(req, rep)
+  })
 }

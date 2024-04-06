@@ -15,6 +15,13 @@
       "when": 1710708580281,
       "tag": "0001_chubby_surge",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1712432760121,
+      "tag": "0002_flaky_boom_boom",
+      "breakpoints": true
     }
   ]
 }
