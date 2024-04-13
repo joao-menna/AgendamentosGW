@@ -1,0 +1,1 @@
+ALTER TABLE "block" ADD CONSTRAINT "unique_block" UNIQUE("hour_id","date");

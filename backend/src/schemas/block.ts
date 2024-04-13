@@ -1,4 +1,4 @@
-import { date, integer, pgTable, serial, timestamp } from 'drizzle-orm/pg-core'
+import { date, integer, pgTable, serial, timestamp, unique } from 'drizzle-orm/pg-core'
 import { hourTable } from './hour'
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod'
 
@@ -8,7 +8,9 @@ export const blockTable = pgTable('block', {
   date: date('date').notNull(),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow()
-})
+}, (table) => ({
+  uniqueBlock: unique('unique_block').on(table.hourId, table.date)
+}))
 
-export const blockSelectSchema = createSelectSchema(blockTable)
-export const blockInsertSchema = createInsertSchema(blockTable)
+export const selectBlockSchema = createSelectSchema(blockTable)
+export const insertBlockSchema = createInsertSchema(blockTable)
