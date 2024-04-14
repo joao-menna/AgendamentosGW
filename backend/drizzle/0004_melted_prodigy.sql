@@ -1,0 +1,1 @@
+ALTER TABLE "hour_class" ALTER COLUMN "class_resource_id" SET NOT NULL;

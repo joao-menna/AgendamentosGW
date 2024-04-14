@@ -29,6 +29,13 @@
       "when": 1713031264448,
       "tag": "0003_secret_speed_demon",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1713120266503,
+      "tag": "0004_melted_prodigy",
+      "breakpoints": true
     }
   ]
 }
