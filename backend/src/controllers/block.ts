@@ -1,9 +1,9 @@
-import { FastifyReply, FastifyRequest } from 'fastify'
+import { blockTable, insertBlockSchema } from '../schemas/block'
 import getUserFromToken from '../functions/getUserFromToken'
+import { FastifyReply, FastifyRequest } from 'fastify'
 import { UNAUTHORIZED } from '../constants/tokens'
 import getDB from '../functions/getDB'
-import { blockTable, insertBlockSchema } from '../schemas/block'
-import { eq } from 'drizzle-orm'
+import { eq, gte } from 'drizzle-orm'
 import { z } from 'zod'
 
 const idValidator = z.coerce.number()
@@ -24,7 +24,11 @@ export class BlockController {
     const { db, client } = await getDB()
 
     try {
-      const blocks = await db.select().from(blockTable)
+      const currentDate = new Date()
+      const first = currentDate.getDate() - currentDate.getDay()
+      const firstDate = new Date(currentDate.setDate(first)).toISOString().split('T')[0]
+
+      const blocks = await db.select().from(blockTable).where(gte(blockTable.date, firstDate))
       await rep.send(blocks)
     } catch (err) {
       await rep.status(500).send(err)
