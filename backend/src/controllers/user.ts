@@ -479,14 +479,14 @@ export class UserController {
   }
 
   async login (req: FastifyRequest, rep: FastifyReply): Promise<FastifyReply> {
-    const { token } = req.body as { token?: string }
+    // const { token } = req.body as { token?: string }
 
-    if (token === undefined || token !== process.env.FIRST_TIME_TOKEN) {
-      await rep.code(401).send({
-        message: 'Unauthorized'
-      })
-      return await rep
-    }
+    // if (token === undefined || token !== process.env.FIRST_TIME_TOKEN) {
+    //   await rep.code(401).send({
+    //     message: 'Unauthorized'
+    //   })
+    //   return await rep
+    // }
 
     let body: z.infer<typeof loginUserSchema> | undefined
 
