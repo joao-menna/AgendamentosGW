@@ -104,7 +104,7 @@ export class SystemController {
         email: insertedUser[0].email,
         type: insertedUser[0].type,
         createdAt: insertedUser[0].createdAt,
-        updatedAt: insertedUser[0].name
+        updatedAt: insertedUser[0].updatedAt
       }
 
       await rep.send(sendUser)
