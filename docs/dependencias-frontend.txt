@@ -7,6 +7,7 @@ Dependências:
 - @reduxjs/toolkit  - facilitador para o gerenciamento de estado com redux
 - @emotion/styled   - library para usar a sintaxe do styled-components
 - @emotion/react    - library para estilizar manualmente
+- @mui/material     - library de componentes
 
 DevDependências:
 - eslint            - forçar guia de estilo
