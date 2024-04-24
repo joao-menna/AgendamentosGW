@@ -3,6 +3,7 @@ import SystemService from "../../services/system"
 import { useNavigate } from "react-router-dom"
 import { useAppDispatch } from "../../hooks"
 import { setFirstTimeState } from "../../slices/firstTimeSlice"
+import { SESSION_TOKEN_KEY } from "../../services"
 
 export default function IndexPage() {
   const dispatch = useAppDispatch()
@@ -10,7 +11,7 @@ export default function IndexPage() {
 
   useEffect(() => {
     (async () => {
-      const token = sessionStorage.getItem("token")
+      const token = sessionStorage.getItem(SESSION_TOKEN_KEY)
       if (token) {
         redirect("/schedule")
         return
