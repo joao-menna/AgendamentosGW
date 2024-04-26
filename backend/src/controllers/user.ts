@@ -117,6 +117,29 @@ export class UserController {
     return await rep
   }
 
+  async getOneByToken (req: FastifyRequest, rep: FastifyReply): Promise<FastifyReply> {
+    const { authorization } = req.headers
+
+    let userAuth
+    try {
+      userAuth = await getUserFromToken(authorization ?? '')
+    } catch (err: any) {
+      await rep.code(401).send({
+        message: err.message
+      })
+      return await rep
+    }
+
+    await rep.send({
+      id: userAuth.id,
+      name: userAuth.name,
+      type: userAuth.type,
+      email: userAuth.email
+    })
+
+    return await rep
+  }
+
   async getOneByEmail (req: FastifyRequest, rep: FastifyReply): Promise<FastifyReply> {
     const { authorization } = req.headers
 

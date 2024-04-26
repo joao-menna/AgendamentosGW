@@ -12,6 +12,11 @@ export default async function userRoutes (fastify: FastifyInstance): Promise<voi
     return await userController.getOneByEmail(req, rep)
   })
 
+  fastify.get('/api/v1/user/token/:token', async (req, rep) => {
+    const userController = new UserController()
+    return await userController.getOneByToken(req, rep)
+  })
+
   fastify.get('/api/v1/user/:id', async (req, rep) => {
     const userController = new UserController()
     return await userController.getOne(req, rep)
