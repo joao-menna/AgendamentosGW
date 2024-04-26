@@ -9,7 +9,7 @@ import InputAdornment from "@mui/material/InputAdornment"
 import TextField from "@mui/material/TextField"
 import Typography from "@mui/material/Typography"
 import { useAppDispatch } from "../../hooks"
-import { setUserToken } from "../../slices/userSlice"
+import { setUserToken, setUserType } from "../../slices/userSlice"
 import { FirstTimeContainer } from "../first-time/styles"
 
 export default function LoginPage() {
@@ -31,15 +31,19 @@ export default function LoginPage() {
   const onSubmitLogin = async (event: SyntheticEvent) => {
     event.preventDefault()
 
-    const loginService = new UserService()
+    const userService = new UserService()
 
-    const req = await loginService.login({
+    const req = await userService.login({
       email,
       password
     })
 
     if (req.token) {
+      userService.token = req.token
+      const user = await userService.getOneByToken()
+
       dispatch(setUserToken(req.token))
+      dispatch(setUserType(user.type))
       sessionStorage.setItem(SESSION_TOKEN_KEY, req.token)
 
       redirect("/schedule")

@@ -28,6 +28,15 @@ export default class UserService {
     return json
   }
 
+  async getOneByToken() {
+    const req = await fetch(`${BASE_URL}/api/v1/user/token`, {
+      headers: { "Authorization": this.token }
+    })
+    const json = await req.json()
+
+    return json
+  }
+
   async insertOne(user: UserInsertBody) {
     const req = await fetch(`${BASE_URL}/api/v1/user`, {
       method: "POST",
