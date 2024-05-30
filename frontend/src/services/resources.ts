@@ -1,7 +1,7 @@
 import { BASE_URL } from "."
 import { ResourceInsertBody } from "../interfaces/resource"
 
-export default class ClassService {
+export default class ResourcesService {
   token: string = ""
 
   constructor(token: string) {
