@@ -7,8 +7,8 @@ export default defineConfig({
   dbCredentials: {
     database: process.env.PGDATABASE ?? 'agendamentosgw',
     host: process.env.PGHOST ?? 'localhost',
-    user: process.env.PGUSER,
-    password: process.env.PGPASSWORD
+    user: process.env.PGUSER ?? 'postgres',
+    password: process.env.PGPASSWORD ?? 'root'
   },
   verbose: true,
   strict: true
