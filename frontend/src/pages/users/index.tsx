@@ -208,7 +208,6 @@ const UsersPage: React.FC = () => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>ID</TableCell>
               <TableCell>Nome</TableCell>
               <TableCell>Email</TableCell>
               <TableCell>Senha</TableCell>
@@ -219,11 +218,12 @@ const UsersPage: React.FC = () => {
           <TableBody>
             {users.map((user) => (
               <TableRow key={user.id}>
-                <TableCell>{user.id}</TableCell>
                 <TableCell>{user.name}</TableCell>
                 <TableCell>{user.email}</TableCell>
                 <TableCell>{user.password}</TableCell>
-                <TableCell>{user.type}</TableCell>
+                <TableCell>
+                  {user.type === "common" ? "Professor" : "Admin"}
+                </TableCell>
                 <TableCell>
                   <IconButton
                     aria-label="editar"

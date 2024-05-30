@@ -136,7 +136,6 @@ const ResourcePage: React.FC = () => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>ID</TableCell>
               <TableCell>Nome</TableCell>
               <TableCell>Ações</TableCell>
             </TableRow>
@@ -144,7 +143,6 @@ const ResourcePage: React.FC = () => {
           <TableBody>
             {resources.map((resource) => (
               <TableRow key={resource.id}>
-                <TableCell>{resource.id}</TableCell>
                 <TableCell>{resource.name}</TableCell>
                 <TableCell>
                   <IconButton

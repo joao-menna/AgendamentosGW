@@ -39,7 +39,7 @@ const SideMenu = () => {
     {
       id: 5,
       text: "Usuários",
-      icon: "delete",
+      icon: "account_circle",
       path: "/users",
     },
   ];
@@ -53,11 +53,7 @@ const SideMenu = () => {
     <span>
       <List style={{ marginTop: 15 }}>
         {menuItems.map(({ text, icon, path }, index) => (
-          <ListItem
-            sx={{ color: "white" }} 
-            key={index}
-            disablePadding
-          >
+          <ListItem sx={{ color: "white" }} key={index} disablePadding>
             <ListItemButton onClick={() => redirect(path as string)}>
               <ListItemIcon style={{ color: "#E8EAED" }}>
                 <Icon>{icon}</Icon>
