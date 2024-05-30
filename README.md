@@ -21,17 +21,20 @@ Trabalho do PAC III, Sistema de agendamento para recursos
 
 #### Back-end
 
-1. Verifique se a ferramenta `psql` (manipulador de banco de dados)
+- Verifique se a ferramenta `psql` (manipulador de banco de dados)
 está na variável de ambiente PATH. Caso não esteja, adicione o caminho ao seu PostgreSQL
 (caminho padrão da instalação: `C:\Program Files\PostgreSQL\16\bin`)
-1. Crie um banco de dados no PostgreSQL:
+- Crie um banco de dados no PostgreSQL:
+
 ```
 $ psql -U postgres
 $ create database agendamentosgw
 ```
-1. Entre na pasta `.\AgendamentosGW\backend`
-1. Crie um arquivo ao lado do `.env.example` chamado `.env`.
-1. Escreva o seguinte conteúdo nesse arquivo `.env`, lembre-se de trocar o `<segredo>` pela sua senha do usuario do PostgreSQL:
+
+- Entre na pasta `.\AgendamentosGW\backend`
+- Crie um arquivo ao lado do `.env.example` chamado `.env`.
+- Escreva o seguinte conteúdo nesse arquivo `.env`, lembre-se de trocar o `<segredo>` pela sua senha do usuario do PostgreSQL:
+
 ```
 PORT=8080
 LOGGER=false
@@ -42,11 +45,12 @@ PGDATABASE="agendamentosgw"
 PGUSER="postgres"
 PGPASSWORD="<segredo>"
 ```
-1. Entre com um terminal na pasta `.\AgendamentosGW\backend`
-1. Vamos instalar os pacotes, certifique-se de estar na pasta correta e rode o comando `yarn`
-1. Precisamos botar o banco de dados em dia, por isso, deve ser rodado as migrations. Rode o comando `yarn migrate`
-1. Chegou a hora de executar o back-end. Execute o comando `yarn dev` e aguarde a mensagem `Server running in port 8080`
-1. Para testar a API, foi criado uma coleção no Insomnia. Baixe o programa e importe a coleção (localizada em `.\AgendamentosGW\docs\AgendamentosGW-Insomnia.json`)
+
+- Entre com um terminal na pasta `.\AgendamentosGW\backend`
+- Vamos instalar os pacotes, certifique-se de estar na pasta correta e rode o comando `yarn`
+- Precisamos botar o banco de dados em dia, por isso, deve ser rodado as migrations. Rode o comando `yarn migrate`
+- Chegou a hora de executar o back-end. Execute o comando `yarn dev` e aguarde a mensagem `Server running in port 8080`
+- Para testar a API, foi criado uma coleção no Insomnia. Baixe o programa e importe a coleção (localizada em `.\AgendamentosGW\docs\AgendamentosGW-Insomnia.json`)
     - Troque o Environment para `Local`.
     - O sistema começa na pasta `System`, onde você consegue, através da request `systemFirstTime`, criar um primeiro usuário na plataforma.
     - Troque as informações no body pelas informações desejadas e envie a request.
