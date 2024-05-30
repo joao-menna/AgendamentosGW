@@ -25,16 +25,13 @@ Trabalho do PAC III, Sistema de agendamento para recursos
 está na variável de ambiente PATH. Caso não esteja, adicione o caminho ao seu PostgreSQL
 (caminho padrão da instalação: `C:\Program Files\PostgreSQL\16\bin`)
 1. Crie um banco de dados no PostgreSQL:
-
 ```
 $ psql -U postgres
 $ create database agendamentosgw
 ```
-
 1. Entre na pasta `.\AgendamentosGW\backend`
 1. Crie um arquivo ao lado do `.env.example` chamado `.env`.
 1. Escreva o seguinte conteúdo nesse arquivo `.env`, lembre-se de trocar o `<segredo>` pela sua senha do usuario do PostgreSQL:
-
 ```
 PORT=8080
 LOGGER=false
@@ -45,7 +42,6 @@ PGDATABASE="agendamentosgw"
 PGUSER="postgres"
 PGPASSWORD="<segredo>"
 ```
-
 1. Entre com um terminal na pasta `.\AgendamentosGW\backend`
 1. Vamos instalar os pacotes, certifique-se de estar na pasta correta e rode o comando `yarn`
 1. Precisamos botar o banco de dados em dia, por isso, deve ser rodado as migrations. Rode o comando `yarn migrate`
