@@ -58,13 +58,15 @@ PGPASSWORD="<segredo>"
     - Com o token em mãos, configure o Environment: você deverá trocar a chave `token` para o token que acabou que criar.
     - O token tem expiração de 24 horas, então a cada 24 horas, se for usar o Insomnia, você deve fazer o processo acima.
  
-#### Frontend
+#### Front-end
 
- - Para rodar o frontend deverá ir até a pasta "frontend" e rodar o comando 'yarn dev'
- - Ao realizar o login, o usuário irá visualizar a tela de Agendamentos
- - Na lateral direita está disponível um menu lateral com as áreas do projeto, sendo elas: "Agendamentos", "Recursos", "Turmas" e "Usuários"
- - As telas de "Recursos, Turmas e de Usuários só poderão ser vista por usuários do tipo "Admin"
- - Usuários do tipo "Professor" terão somente acesso a tela de agendamentos e ao botão de sair/deslogar.
- - Para o calendário foi usado o componente FullCalendar https://fullcalendar.io/
- - No agendamento não é possível editar um agendamento
- - Existem três CRUDs dentro do projeto: sendo eles, as telas de Recursos, Usuários e Turmas
+- Entre com um terminal na pasta `.\AgendamentosGW\frontend`
+- Execute o comando `yarn` para baixar todas as dependências
+- Rode o front-end com o comando `yarn dev`
+- Ao realizar o login, o usuário irá visualizar a tela de Agendamentos
+- Na lateral direita está disponível um menu lateral com as áreas do projeto, sendo elas: "Agendamentos", "Recursos", "Turmas" e "Usuários"
+- As telas "Recursos", "Turmas" e "Usuários" só poderão ser vista por usuários do tipo "Admin"
+- Usuários do tipo "Professor" terão somente acesso a tela de agendamentos e ao botão de sair/deslogar.
+- Para o calendário foi usado o componente FullCalendar https://fullcalendar.io/
+- No agendamento não é possível editar um agendamento, apenas criar e excluir
+- Existem três CRUDs dentro do projeto: sendo eles, as telas de Recursos, Usuários e Turmas
