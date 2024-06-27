@@ -12,7 +12,8 @@ export default async function getDB (): Promise<ReturnType> {
     database: process.env.PGDATABASE,
     user: process.env.PGUSER,
     password: process.env.PGPASSWORD,
-    port: parseInt(process.env.PGPORT ?? '5432')
+    port: parseInt(process.env.PGPORT ?? '5432'),
+    ssl: true
   })
 
   await client.connect()
