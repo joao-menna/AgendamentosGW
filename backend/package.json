@@ -4,11 +4,12 @@
   "description": "Backend do AgendamentosGW",
   "license": "GPL-3.0-only",
   "scripts": {
-    "dev": "nodemon ./src/main.ts",
-    "start": "ts-node ./src/main.ts",
-    "migrate": "ts-node ./src/scripts/migrate.ts",
-    "generate": "drizzle-kit generate:pg",
-    "test": "jest --coverage"
+    "dev": "npx nodemon ./src/main.ts",
+    "start": "npx ts-node ./src/main.ts",
+    "build": "npx tsc -p .",
+    "migrate": "npx ts-node ./src/scripts/migrate.ts",
+    "generate": "npx drizzle-kit generate:pg",
+    "test": "npx jest --coverage"
   },
   "dependencies": {
     "@fastify/autoload": "^5.8.0",
