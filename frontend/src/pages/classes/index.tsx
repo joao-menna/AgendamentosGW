@@ -1,148 +1,165 @@
-import React, { useState, useEffect } from "react";
-import {
-  Button,
-  Container,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  TextField,
-  IconButton,
-  MenuItem,
-  Select,
-  FormControl,
-  InputLabel,
-} from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
-import { useAppSelector } from "../../hooks";
-import ClassesService from "../../services/classes";
-import UserService from "../../services/users";
-import SideMenu from "../../components/sideMenu";
-import { UserType } from "../../slices/userSlice";
+import { ClassInsertBody, ClassUpdateBody } from "../../interfaces/class"
+import DialogActions from "@mui/material/DialogActions"
+import DialogContent from "@mui/material/DialogContent"
+import ClassesService from "../../services/classes"
+import DialogTitle from "@mui/material/DialogTitle"
+import FormControl from "@mui/material/FormControl"
+import { UserType } from "../../slices/userSlice"
+import IconButton from "@mui/material/IconButton"
+import InputLabel from "@mui/material/InputLabel"
+import Container from "@mui/material/Container"
+import TableBody from "@mui/material/TableBody"
+import TableCell from "@mui/material/TableCell"
+import TableHead from "@mui/material/TableHead"
+import TextField from "@mui/material/TextField"
+import { useNavigate } from "react-router-dom"
+import UserService from "../../services/users"
+import TableRow from "@mui/material/TableRow"
+import MenuItem from "@mui/material/MenuItem"
+import { useAppSelector } from "../../hooks"
+import { useState, useEffect } from "react"
+import Button from "@mui/material/Button"
+import Dialog from "@mui/material/Dialog"
+import Select from "@mui/material/Select"
+import Table from "@mui/material/Table"
+import Icon from "@mui/material/Icon"
 
-interface IClass {
-  id: number;
-  name: string;
-  period: "matutine" | "vespertine";
-  teacherId: number;
+type Period = "matutine" | "vespertine"
+
+interface Class {
+  id: number
+  name: string
+  period: Period
+  teacherId: number
 }
 
 interface User {
-  id: number;
-  name: string;
-  type: UserType;
+  id: number
+  name: string
+  type: UserType
 }
 
-const ClassPage: React.FC = () => {
-  const [classes, setClasses] = useState<IClass[]>([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [name, setName] = useState("");
-  const [period, setPeriod] = useState<"matutine" | "vespertine">("matutine");
-  const [teacherId, setTeacherId] = useState<number | string>("");
-  const [teachers, setTeachers] = useState<User[]>([]);
-  const [editing, setEditing] = useState<IClass | null>(null);
-  const token = useAppSelector((state) => state.user.token);
+export default function ClassPage() {
+  const [classes, setClasses] = useState<Class[]>([])
+  const [modalOpen, setModalOpen] = useState(false)
+  const [name, setName] = useState("")
+  const [period, setPeriod] = useState<Period>("matutine")
+  const [teacherId, setTeacherId] = useState<number>(0)
+  const [teachers, setTeachers] = useState<User[]>([])
+  const [editingId, setEditingId] = useState<number | undefined>()
+  const [loading, setLoading] = useState<boolean>(false)
+  const { token, type } = useAppSelector((state) => state.user)
+  const navigate = useNavigate()
 
   useEffect(() => {
+    if (!['admin', 'owner'].includes(type)) {
+      navigate('/')
+    }
+
     const fetchClasses = async () => {
-      const classService = new ClassesService(token);
-      const fetchedClasses = await classService.getAll();
+      const classService = new ClassesService(token)
+      const fetchedClasses = await classService.getAll()
       const classData = fetchedClasses.map(
-        (item: { class: IClass }) => item.class
-      );
-      setClasses(classData);
-    };
+        (item: { class: Class }) => item.class
+      )
+      setClasses(classData)
+    }
 
     const fetchTeachers = async () => {
-      const userService = new UserService(token);
-      const fetchedUsers = await userService.getAll();
-      const teacherData = fetchedUsers.filter(
-        (user: User) => user.type === "common"
-      );
-      setTeachers(teacherData);
-    };
+      const userService = new UserService(token)
+      const fetchedUsers = await userService.getAll()
 
-    fetchClasses();
-    fetchTeachers();
-  }, [token]);
+      setTeachers(fetchedUsers)
+    }
+
+    fetchClasses()
+    fetchTeachers()
+  }, [])
+
+  const getClassToSend = () => ({
+    name,
+    period,
+    teacherId
+  })
 
   const handleAddClass = async () => {
-    const classService = new ClassesService(token);
-    const newClass = {
-      name,
-      period,
-      teacherId: parseInt(teacherId as string, 10),
-    };
-    const addedClass = await classService.insertOne(newClass);
-    setClasses([...classes, addedClass]);
-    setIsModalOpen(false);
-    resetForm();
-  };
+    setLoading(true)
+
+    const classService = new ClassesService(token)
+
+    const newClass: ClassInsertBody = getClassToSend()
+
+    const addedClass = await classService.insertOne(newClass)
+    setClasses([...classes, addedClass])
+    setModalOpen(false)
+    resetForm()
+
+    setLoading(false)
+  }
 
   const handleEditClass = async () => {
-    if (editing) {
-      const classService = new ClassesService(token);
-      const updatedClass = {
-        name,
-        period,
-        teacherId: parseInt(teacherId as string, 10),
-      };
-      const updated = await classService.updateOne(editing.id, updatedClass);
-      setClasses(classes.map((cls) => (cls.id === editing.id ? updated : cls)));
-      setIsModalOpen(false);
-      resetForm();
+    if (!editingId) {
+      return
     }
-  };
+
+    setLoading(true)
+
+    const classService = new ClassesService(token)
+
+    const updatedClass: ClassUpdateBody = getClassToSend()
+
+    const updated = await classService.updateOne(editingId, updatedClass)
+
+    setClasses(classes.map((cls) => (cls.id === editingId ? updated : cls)))
+    setModalOpen(false)
+    resetForm()
+
+    setLoading(false)
+  }
 
   const handleDeleteClass = async (classId: number) => {
-    const classService = new ClassesService(token);
-    await classService.deleteOne(classId);
-    setClasses(classes.filter((cls) => cls.id !== classId));
-  };
+    setLoading(true)
 
-  const openEditModal = (cls: IClass) => {
-    setEditing(cls);
-    setName(cls.name);
-    setPeriod(cls.period);
-    setTeacherId(cls.teacherId);
-    setIsModalOpen(true);
-  };
+    const classService = new ClassesService(token)
+    await classService.deleteOne(classId)
+    setClasses(classes.filter((cls) => cls.id !== classId))
+
+    setLoading(false)
+  }
+
+  const openEditModal = (cls: Class) => {
+    setEditingId(cls.id)
+    setName(cls.name)
+    setPeriod(cls.period)
+    setTeacherId(cls.teacherId)
+    setModalOpen(true)
+  }
 
   const resetForm = () => {
-    setName("");
-    setPeriod("matutine");
-    setTeacherId("");
-    setEditing(null);
-  };
+    setName("")
+    setPeriod("matutine")
+    setTeacherId(1)
+    setEditingId(undefined)
+  }
 
   return (
     <div style={{ display: "flex" }}>
-      <SideMenu />
       <Container maxWidth="md">
         <h1>Turma</h1>
         <Button
           variant="contained"
           color="primary"
-          onClick={() => {
-            setIsModalOpen(true);
-            resetForm();
-          }}
+          onClick={() => setModalOpen(true)}
         >
           Adicionar
         </Button>
         <Dialog
-          open={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
+          open={modalOpen}
+          onClose={() => setModalOpen(false)}
           aria-labelledby="form-dialog-title"
         >
           <DialogTitle id="form-dialog-title">
-            {editing ? "Editar Turma" : "Adicionar Turma"}
+            {editingId ? "Editar Turma" : "Adicionar Turma"}
           </DialogTitle>
           <DialogContent>
             <TextField
@@ -158,9 +175,7 @@ const ClassPage: React.FC = () => {
               <InputLabel>Período</InputLabel>
               <Select
                 value={period}
-                onChange={(e) =>
-                  setPeriod(e.target.value as "matutine" | "vespertine")
-                }
+                onChange={(e) => setPeriod(e.target.value as Period)}
               >
                 <MenuItem value="matutine">Matutino</MenuItem>
                 <MenuItem value="vespertine">Vespertino</MenuItem>
@@ -169,9 +184,10 @@ const ClassPage: React.FC = () => {
             <FormControl fullWidth margin="dense">
               <InputLabel>Professor</InputLabel>
               <Select
-                value={teacherId}
+                value={teacherId ?? 0}
                 onChange={(e) => setTeacherId(e.target.value as number)}
               >
+                <MenuItem value={0} disabled></MenuItem>
                 {teachers.map((teacher) => (
                   <MenuItem key={teacher.id} value={teacher.id}>
                     {teacher.name}
@@ -181,14 +197,15 @@ const ClassPage: React.FC = () => {
             </FormControl>
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => setIsModalOpen(false)} color="primary">
+            <Button disabled={loading} onClick={() => setModalOpen(false)} color="primary">
               Cancelar
             </Button>
             <Button
-              onClick={editing ? handleEditClass : handleAddClass}
+              disabled={loading}
+              onClick={editingId ? handleEditClass : handleAddClass}
               color="primary"
             >
-              {editing ? "Salvar" : "Adicionar"}
+              {editingId ? "Salvar" : "Adicionar"}
             </Button>
           </DialogActions>
         </Dialog>
@@ -205,9 +222,9 @@ const ClassPage: React.FC = () => {
             {classes.map((cls) => (
               <TableRow key={cls.id}>
                 <TableCell>{cls.name}</TableCell>
-                <TableCell>{cls.period}</TableCell>
+                <TableCell>{cls.period === 'matutine' ? 'Matutino' : 'Vespertino'}</TableCell>
                 <TableCell>
-                  {teachers.find((t) => t.id === cls.teacherId)?.name}
+                  {teachers.find((t) => t.id === cls.teacherId)!.name}
                 </TableCell>
                 <TableCell>
                   <IconButton
@@ -215,14 +232,14 @@ const ClassPage: React.FC = () => {
                     onClick={() => openEditModal(cls)}
                     size="small"
                   >
-                    <EditIcon />
+                    <Icon>edit_outline</Icon>
                   </IconButton>
                   <IconButton
                     size="small"
                     aria-label="deletar"
                     onClick={() => handleDeleteClass(cls.id)}
                   >
-                    <DeleteIcon />
+                    <Icon>delete_outline</Icon>
                   </IconButton>
                 </TableCell>
               </TableRow>
@@ -231,7 +248,5 @@ const ClassPage: React.FC = () => {
         </Table>
       </Container>
     </div>
-  );
-};
-
-export default ClassPage;
+  )
+}

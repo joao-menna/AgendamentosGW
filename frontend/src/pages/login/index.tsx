@@ -18,6 +18,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState<string>("");
   const [showingPassword, setShowingPassword] = useState<boolean>(false);
   const [wentWrong, setWentWrong] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false)
   const dispatch = useAppDispatch();
   const redirect = useNavigate();
 
@@ -31,13 +32,21 @@ export default function LoginPage() {
 
   const onSubmitLogin = async (event: SyntheticEvent) => {
     event.preventDefault();
+    setLoading(true)
 
     const userService = new UserService();
 
-    const req = await userService.login({
-      email,
-      password,
-    });
+    let req
+    try {
+      req = await userService.login({
+        email,
+        password,
+      });
+    } catch (err) {
+      setLoading(false)
+    }
+
+    setLoading(false)
 
     if (req.token) {
       userService.token = req.token;
@@ -121,7 +130,7 @@ export default function LoginPage() {
                 </Typography>
               </Box>
               <Box sx={{ mt: 2 }}>
-                <Button type="submit" variant="contained" fullWidth>
+                <Button type="submit" variant="contained" fullWidth disabled={loading}>
                   Login
                 </Button>
               </Box>

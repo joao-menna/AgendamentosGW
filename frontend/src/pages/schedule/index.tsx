@@ -11,7 +11,6 @@ import {
   FormControl,
   InputLabel,
 } from "@mui/material";
-import SideMenu from "../../components/sideMenu";
 import ScheduleService from "../../services/schedule";
 import HourService from "../../services/hours";
 import { useAppSelector } from "../../hooks";
@@ -96,7 +95,6 @@ const SchedulePage: React.FC = () => {
 
   return (
     <div style={{ display: "flex" }}>
-      <SideMenu />
       <div style={{ flex: 1, padding: "20px" }}>
         <FullCalendar
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}

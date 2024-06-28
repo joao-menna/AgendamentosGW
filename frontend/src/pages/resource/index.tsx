@@ -16,7 +16,6 @@ import {
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import SideMenu from "../../components/sideMenu";
 import ResourcesService from "../../services/resources";
 import { useAppSelector } from "../../hooks";
 
@@ -88,7 +87,6 @@ const ResourcePage: React.FC = () => {
 
   return (
     <div style={{ display: "flex" }}>
-      <SideMenu />
       <Container maxWidth="md">
         <h1>Recursos</h1>
         <Button
