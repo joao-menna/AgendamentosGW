@@ -18,7 +18,7 @@ import { useAppSelector } from "../../hooks";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
-import interactionPlugin from "@fullcalendar/interaction";
+import interactionPlugin, { DateClickArg } from "@fullcalendar/interaction";
 import { ScheduleInsertBody } from "../../interfaces/schedule";
 
 interface ScheduleData {
@@ -31,13 +31,17 @@ const SchedulePage: React.FC = () => {
   const [scheduleData, setScheduleData] = useState<ScheduleData[]>([]);
   const [hourData, setHourData] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [date, setDate] = useState("");
+  const [date, setDate] = useState<string>("");
   const [hourId, setHourId] = useState<number | undefined>(undefined);
   const [classResourceId, setClassResourceId] = useState<number | undefined>(undefined);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const { token } = useAppSelector((state) => state.user);
 
   useEffect(() => {
+    if (!token) {
+      return
+    }
+
     const fetchSchedule = async () => {
       const scheduleService = new ScheduleService(token);
       const fetchedSchedule = await scheduleService.getAllFiltered({});
@@ -55,6 +59,10 @@ const SchedulePage: React.FC = () => {
   }, [token]);
 
   const handleAddSchedule = async () => {
+    if (!token) {
+      return
+    }
+
     const scheduleService = new ScheduleService(token);
     const newSchedule: ScheduleInsertBody = {
       date: date,
@@ -73,7 +81,7 @@ const SchedulePage: React.FC = () => {
     setClassResourceId(0);
   };
 
-  const handleDateClick = (info: any) => {
+  const handleDateClick = (info: DateClickArg) => {
     const clickedDate = info.dateStr.split("T")[0];
     const clickedTime = info.dateStr.split("T")[1].slice(0, 5);
 
@@ -93,7 +101,7 @@ const SchedulePage: React.FC = () => {
         <FullCalendar
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
           initialView="timeGridWeek"
-          slotDuration="01:00:00"
+          slotDuration="04:00:00"
           allDaySlot={false}
           selectable={true}
           dateClick={handleDateClick}

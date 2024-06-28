@@ -8,8 +8,21 @@ import IndexPage from "./pages/index";
 import UsersPage from "./pages/users";
 import ClassesPage from "./pages/classes";
 import ResourcePage from "./pages/resource";
+import { useEffect } from "react";
+import { SESSION_TOKEN_KEY } from "./services";
+import { useAppDispatch } from "./hooks";
+import { setUserToken } from "./slices/userSlice";
 
 function App() {
+  const dispatch = useAppDispatch()
+
+  useEffect(() => {
+    const token = sessionStorage.getItem(SESSION_TOKEN_KEY);
+    if (token) {
+      dispatch(setUserToken(token))
+      return;
+    }
+  })
   return (
     <BrowserRouter>
       <Routes>
