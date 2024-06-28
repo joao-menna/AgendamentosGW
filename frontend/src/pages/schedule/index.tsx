@@ -19,6 +19,7 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
+import { ScheduleInsertBody } from "../../interfaces/schedule";
 
 interface ScheduleData {
   date: string;
@@ -31,10 +32,10 @@ const SchedulePage: React.FC = () => {
   const [hourData, setHourData] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [date, setDate] = useState("");
-  const [hourId, setHourId] = useState<number | string>("");
-  const [classResourceId, setClassResourceId] = useState<number | string>("");
+  const [hourId, setHourId] = useState<number | undefined>(undefined);
+  const [classResourceId, setClassResourceId] = useState<number | undefined>(undefined);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
-  const token = useAppSelector((state) => state.user.token);
+  const { token } = useAppSelector((state) => state.user);
 
   useEffect(() => {
     const fetchSchedule = async () => {
@@ -55,10 +56,10 @@ const SchedulePage: React.FC = () => {
 
   const handleAddSchedule = async () => {
     const scheduleService = new ScheduleService(token);
-    const newSchedule = {
+    const newSchedule: ScheduleInsertBody = {
       date: date,
-      hourId: hourId,
-      classResourceId: classResourceId,
+      hourId: hourId!,
+      classResourceId: classResourceId!,
     };
     const addedSchedule = await scheduleService.insertOne(newSchedule);
     setScheduleData([...scheduleData, addedSchedule]);
@@ -68,7 +69,7 @@ const SchedulePage: React.FC = () => {
 
   const resetForm = () => {
     setDate("");
-    setHourId("");
+    setHourId(undefined);
     setClassResourceId(0);
   };
 
