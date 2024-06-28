@@ -10,6 +10,9 @@ export default async function getServer (): Promise<FastifyInstance> {
   })
 
   await server.register(fastifyCors, {
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
     origin: '*'
   })
 
