@@ -2,3 +2,4 @@
 export const BASE_URL = "https://agendamentosgw-backend.onrender.com"
 export const LOGIN_TOKEN = "undefined"
 export const SESSION_TOKEN_KEY = "token"
+export const SESSION_PERIOD_KEY = "period"

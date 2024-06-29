@@ -218,7 +218,6 @@ export default function ClassPage() {
         <Dialog
           open={modalOpen}
           onClose={() => setModalOpen(false)}
-          aria-labelledby="form-dialog-title"
         >
           <DialogTitle id="form-dialog-title">
             {editingId ? "Editar Turma" : "Adicionar Turma"}

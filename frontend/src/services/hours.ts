@@ -18,6 +18,7 @@ export default class HourService {
 
   async insertAll() {
     const req = await fetch(`${BASE_URL}/api/v1/hour`, {
+      method: "POST",
       headers: { "Authorization": this.token }
     })
     const json = await req.json()
@@ -27,6 +28,7 @@ export default class HourService {
 
   async deleteAll() {
     const req = await fetch(`${BASE_URL}/api/v1/hour`, {
+      method: "DELETE",
       headers: { "Authorization": this.token }
     })
     const json = await req.json()
