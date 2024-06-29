@@ -1,5 +1,6 @@
 import { UserInsertBody, UserUpdateBody } from "../../interfaces/user"
 import FormControlLabel from "@mui/material/FormControlLabel"
+import CircularProgress from "@mui/material/CircularProgress"
 import DialogActions from "@mui/material/DialogActions"
 import DialogContent from "@mui/material/DialogContent"
 import DialogTitle from "@mui/material/DialogTitle"
@@ -23,6 +24,7 @@ import Button from "@mui/material/Button"
 import Table from "@mui/material/Table"
 import Radio from "@mui/material/Radio"
 import Icon from "@mui/material/Icon"
+import Box from "@mui/material/Box"
 
 
 interface User {
@@ -56,9 +58,13 @@ export default function UsersPage() {
     }
 
     (async () => {
+      setLoading(true)
+
       const userService = new UserService(token);
       const fetchedUsers = await userService.getAll();
       setUsers(fetchedUsers);
+
+      setLoading(false)
     })();
   }, []);
 
@@ -271,6 +277,12 @@ export default function UsersPage() {
             ))}
           </TableBody>
         </Table>
+        {
+          loading &&
+          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <CircularProgress />
+          </Box>
+        }
       </Container>
     </div>
   )

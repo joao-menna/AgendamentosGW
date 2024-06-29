@@ -1,89 +1,128 @@
-import React, { useState, useEffect } from "react";
-import {
-  Button,
-  Container,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  TextField,
-  IconButton,
-} from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
-import ResourcesService from "../../services/resources";
-import { useAppSelector } from "../../hooks";
+import CircularProgress from "@mui/material/CircularProgress"
+import ResourcesService from "../../services/resources"
+import DialogActions from "@mui/material/DialogActions"
+import DialogContent from "@mui/material/DialogContent"
+import DialogTitle from "@mui/material/DialogTitle"
+import IconButton from "@mui/material/IconButton"
+import Container from "@mui/material/Container"
+import TableBody from "@mui/material/TableBody"
+import TableCell from "@mui/material/TableCell"
+import TableHead from "@mui/material/TableHead"
+import TextField from "@mui/material/TextField"
+import { useNavigate } from "react-router-dom"
+import TableRow from "@mui/material/TableRow"
+import { useAppSelector } from "../../hooks"
+import { useState, useEffect } from "react"
+import Button from "@mui/material/Button"
+import Dialog from "@mui/material/Dialog"
+import Table from "@mui/material/Table"
+import Icon from "@mui/material/Icon"
+import Box from "@mui/material/Box"
 
 interface Resource {
-  id: number;
-  name: string;
+  id: number
+  name: string
 }
 
-const ResourcePage: React.FC = () => {
-  const [resources, setResources] = useState<Resource[]>([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [name, setName] = useState("");
-  const [editingResourceId, setEditingResourceId] = useState<number | null>(
-    null
-  );
-  const token = useAppSelector((state) => state.user.token);
-  const resourcesService = new ResourcesService(token);
+export default function ResourcePage() {
+  const [resources, setResources] = useState<Resource[]>([])
+  const [modalOpen, setModalOpen] = useState<boolean>(false)
+  const [editingResourceId, setEditingResourceId] = useState<number | undefined>()
+  const [loading, setLoading] = useState<boolean>(false)
+  const [name, setName] = useState<string>("")
+  const { token, type } = useAppSelector((state) => state.user);
+  const navigate = useNavigate()
 
   useEffect(() => {
-    loadResources();
-  }, []);
-
-  const loadResources = async () => {
-    try {
-      const response = await resourcesService.getAll();
-      setResources(response);
-    } catch (error) {
-      console.error("Erro ao carregar recursos", error);
+    if (type === 'common') {
+      navigate('/')
+      return
     }
-  };
+
+    (async () => {
+      setLoading(true)
+
+      const resourcesService = new ResourcesService(token)
+
+      try {
+        const response = await resourcesService.getAll();
+        setResources(response);
+      } catch (error) {
+        console.error("Erro ao carregar recursos", error);
+      } finally {
+        setLoading(false)
+      }
+    })()
+  }, [])
 
   const handleAddResource = async () => {
-    try {
-      await resourcesService.insertOne({ name });
-      setIsModalOpen(false);
-      setName("");
-      loadResources();
-    } catch (error) {
-      console.error("Erro ao adicionar recurso", error);
-    }
-  };
+    const resourcesService = new ResourcesService(token)
 
-  const handleEditResource = (resource: Resource) => {
-    setName(resource.name);
-    setEditingResourceId(resource.id);
-    setIsModalOpen(true);
-  };
+    setLoading(true)
+
+    let newResource
+
+    try {
+      newResource = await resourcesService.insertOne({ name })
+    } catch (error) {
+      console.error("Erro ao adicionar recurso", error)
+    }
+
+    setResources([...resources, newResource])
+
+    setLoading(false)
+
+    setModalOpen(false)
+    setName("")
+  }
+
+  const handleEditResource = async (resource: Resource) => {
+    setName(resource.name)
+    setEditingResourceId(resource.id)
+    setModalOpen(true)
+  }
 
   const handleSaveEdit = async () => {
+    const resourcesService = new ResourcesService(token)
+
+    setLoading(true)
+
+    let editedResource: Resource | undefined
+
     try {
-      await resourcesService.updateOne(editingResourceId!, { name });
-      setIsModalOpen(false);
-      setEditingResourceId(null);
-      setName("");
-      loadResources();
+      editedResource = await resourcesService.updateOne(editingResourceId!, { name })
     } catch (error) {
-      console.error("Erro ao editar recurso", error);
+      console.error("Erro ao editar recurso", error)
     }
-  };
+
+    setLoading(false)
+
+    const newResources = resources
+    const resource = newResources.find((val) => editedResource!.id === val.id)
+    resource!.name = editedResource?.name ?? ''
+
+    setResources(newResources)
+
+    setModalOpen(false)
+    setEditingResourceId(undefined)
+    setName("")
+  }
 
   const handleDeleteResource = async (resourceId: number) => {
+    const resourcesService = new ResourcesService(token)
+
+    setLoading(true)
+
     try {
-      await resourcesService.deleteOne(resourceId);
-      loadResources();
+      await resourcesService.deleteOne(resourceId)
     } catch (error) {
-      console.error("Erro ao excluir recurso", error);
+      console.error("Erro ao excluir recurso", error)
     }
-  };
+
+    setResources(resources.filter((res) => res.id !== resourceId))
+
+    setLoading(false)
+  }
 
   return (
     <div style={{ display: "flex" }}>
@@ -92,17 +131,13 @@ const ResourcePage: React.FC = () => {
         <Button
           variant="contained"
           color="primary"
-          onClick={() => {
-            setIsModalOpen(true);
-            setEditingResourceId(null);
-          }}
+          onClick={() => setModalOpen(true)}
         >
           Adicionar
         </Button>
         <Dialog
-          open={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          aria-labeledby="form-dialog-title"
+          open={modalOpen}
+          onClose={() => setModalOpen(false)}
           fullWidth={true}
         >
           <DialogTitle id="form-dialog-title">
@@ -120,10 +155,11 @@ const ResourcePage: React.FC = () => {
             />
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => setIsModalOpen(false)} color="primary">
+            <Button disabled={loading} onClick={() => setModalOpen(false)} color="primary">
               Cancelar
             </Button>
             <Button
+              disabled={loading}
               onClick={editingResourceId ? handleSaveEdit : handleAddResource}
               color="primary"
             >
@@ -148,23 +184,27 @@ const ResourcePage: React.FC = () => {
                     onClick={() => handleEditResource(resource)}
                     size="small"
                   >
-                    <EditIcon />
+                    <Icon>edit_outline</Icon>
                   </IconButton>
                   <IconButton
                     aria-label="deletar"
                     onClick={() => handleDeleteResource(resource.id)}
                     size="small"
                   >
-                    <DeleteIcon />
+                    <Icon>delete_outline</Icon>
                   </IconButton>
                 </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
+        {
+          loading &&
+          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <CircularProgress />
+          </Box>
+        }
       </Container>
     </div>
-  );
-};
-
-export default ResourcePage;
+  )
+}
