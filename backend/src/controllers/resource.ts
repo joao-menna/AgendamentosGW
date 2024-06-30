@@ -57,7 +57,7 @@ export class ResourceController {
       return await rep
     }
 
-    const allowedTypes = ['owner', 'admin']
+    const allowedTypes = ['owner', 'admin', 'common']
     if (!allowedTypes.includes(userAuth.type)) {
       await rep.code(401).send({
         message: UNAUTHORIZED
