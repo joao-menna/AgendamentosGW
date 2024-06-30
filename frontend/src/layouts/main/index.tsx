@@ -1,20 +1,23 @@
+import { setUserId, setUserToken, setUserType } from "../../slices/userSlice"
 import { DrawerMenuItem } from "../../interfaces/drawerMenuItem"
+import { useAppDispatch, useAppSelector } from "../../hooks"
 import ListItemButton from "@mui/material/ListItemButton"
+import { Outlet, useNavigate } from "react-router-dom"
 import ListItemIcon from "@mui/material/ListItemIcon"
 import ListItemText from "@mui/material/ListItemText"
 import CssBaseline from "@mui/material/CssBaseline"
+import { SESSION_TOKEN_KEY } from "../../services"
 import Typography from "@mui/material/Typography"
 import IconButton from "@mui/material/IconButton"
+import UserService from "../../services/users"
 import ListItem from "@mui/material/ListItem"
-import { useAppSelector } from "../../hooks"
+import { useEffect, useState } from "react"
 import Toolbar from "@mui/material/Toolbar"
 import Divider from "@mui/material/Divider"
-import { Outlet, useNavigate } from "react-router-dom"
 import AppBar from "@mui/material/AppBar"
 import Drawer from "@mui/material/Drawer"
 import List from "@mui/material/List"
 import Icon from "@mui/material/Icon"
-import { useState } from "react"
 import Box from "@mui/material/Box"
 
 const drawerWidth = 240
@@ -42,6 +45,11 @@ const middleDrawerMenuItems: DrawerMenuItem[] = [
     icon: "group_outline",
     text: "Usuários",
     location: "/users"
+  },
+  {
+    icon: "block_outline",
+    text: "Bloqueios",
+    location: "/blocks"
   }
 ]
 
@@ -57,7 +65,31 @@ export default function MainLayout() {
   const [mobileOpen, setMobileOpen] = useState<boolean>(false)
   const [isClosing, setIsClosing] = useState<boolean>(false)
   const { type } = useAppSelector((state) => state.user)
+  const dispatch = useAppDispatch()
   const navigate = useNavigate()
+
+  useEffect(() => {
+    (async () => {
+      const token = sessionStorage.getItem(SESSION_TOKEN_KEY)
+      if (!token) {
+        redirect("/login")
+        return
+      }
+
+      const userService = new UserService(token)
+      let user
+      try {
+        user = await userService.getOneByToken()
+      } catch (err) {
+        redirect('/logoff')
+        return
+      }
+
+      dispatch(setUserId(user.id))
+      dispatch(setUserToken(token))
+      dispatch(setUserType(user.type))
+    })()
+  }, [])
 
   const handleDrawerClose = () => {
     setIsClosing(true);

@@ -2,7 +2,7 @@ import { Outlet, useNavigate } from "react-router-dom"
 import { SESSION_TOKEN_KEY } from "../../services"
 import { useEffect } from "react"
 import { useAppDispatch } from "../../hooks"
-import { setUserToken, setUserType } from "../../slices/userSlice"
+import { setUserId, setUserToken, setUserType } from "../../slices/userSlice"
 import UserService from "../../services/users"
 
 export default function RootLayout() {
@@ -20,6 +20,7 @@ export default function RootLayout() {
       const userService = new UserService(token)
       const user = await userService.getOneByToken()
 
+      dispatch(setUserId(user.id))
       dispatch(setUserToken(token))
       dispatch(setUserType(user.type))
     })()

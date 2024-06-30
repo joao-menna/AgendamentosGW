@@ -196,6 +196,12 @@ export default function ClassPage() {
     setModalOpen(true)
   }
 
+  const getTeacherName = (teacherId: number) => {
+    const teacher = teachers.find((t) => t.id === teacherId)
+    if (!teacher) return ''
+    return teacher.name
+  }
+
   const resetForm = () => {
     setName("")
     setPeriod("matutine")
@@ -334,7 +340,7 @@ export default function ClassPage() {
                 <TableCell>{cls.name}</TableCell>
                 <TableCell>{cls.period === 'matutine' ? 'Matutino' : 'Vespertino'}</TableCell>
                 <TableCell>
-                  {teachers.find((t) => t.id === cls.teacherId)!.name}
+                  {getTeacherName(cls.teacherId)}
                 </TableCell>
                 <TableCell>
                   <IconButton

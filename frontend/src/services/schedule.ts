@@ -1,30 +1,30 @@
-import { BASE_URL } from ".";
-import { ScheduleFilters, ScheduleInsertBody } from "../interfaces/schedule";
+import { ScheduleFilters, ScheduleInsertBody } from "../interfaces/schedule"
+import { BASE_URL } from "."
 
 export default class ScheduleService {
-  token: string = "";
+  token: string = ""
 
   constructor(token: string) {
-    this.token = token;
+    this.token = token
   }
 
   async getAllFiltered(filters: ScheduleFilters) {
-    const query = [];
+    const query = []
 
-    if (filters.userId !== undefined) query.push(`userId=${filters.userId}`);
+    if (filters.userId !== undefined) query.push(`userId=${filters.userId}`)
     if (filters.resourceId !== undefined)
-      query.push(`resourceId=${filters.resourceId}`);
-    if (filters.classId !== undefined) query.push(`classId=${filters.classId}`);
-    if (filters.minDate !== undefined) query.push(`minDate=${filters.minDate}`);
-    if (filters.maxDate !== undefined) query.push(`maxDate=${filters.maxDate}`);
+      query.push(`resourceId=${filters.resourceId}`)
+    if (filters.classId !== undefined) query.push(`classId=${filters.classId}`)
+    if (filters.minDate !== undefined) query.push(`minDate=${filters.minDate}`)
+    if (filters.maxDate !== undefined) query.push(`maxDate=${filters.maxDate}`)
 
     const req = await fetch(`${BASE_URL}/api/v1/schedule?${query.join("&")}`, {
-      headers: { Authorization: this.token },
-    });
+      headers: { Authorization: this.token }
+    })
 
-    const json = await req.json();
+    const json = await req.json()
 
-    return json;
+    return json
   }
 
   async insertOne(schedule: ScheduleInsertBody) {
@@ -34,22 +34,26 @@ export default class ScheduleService {
         Authorization: this.token,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(schedule),
-    });
+      body: JSON.stringify(schedule)
+    })
 
-    const json = await req.json();
+    if (req.status === 400) {
+      throw new Error()
+    }
 
-    return json;
+    const json = await req.json()
+
+    return json
   }
 
   async deleteOne(id: number) {
     const req = await fetch(`${BASE_URL}/api/v1/schedule/${id}`, {
-      method: "POST",
+      method: "DELETE",
       headers: { Authorization: this.token },
-    });
+    })
 
-    const json = await req.json();
+    const json = await req.json()
 
-    return json;
+    return json
   }
 }

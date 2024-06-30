@@ -1,6 +1,8 @@
-import interactionPlugin from "@fullcalendar/interaction"
+import { EventClickArg, EventSourceInput } from "@fullcalendar/core/index.js"
 import { ScheduleInsertBody } from "../../interfaces/schedule"
 import CircularProgress from "@mui/material/CircularProgress"
+import interactionPlugin from "@fullcalendar/interaction"
+import ResourcesService from "../../services/resources"
 import DialogContent from "@mui/material/DialogContent"
 import DialogActions from "@mui/material/DialogActions"
 import ScheduleService from "../../services/schedule"
@@ -11,7 +13,9 @@ import FormControl from "@mui/material/FormControl"
 import dayGridPlugin from "@fullcalendar/daygrid"
 import ClassService from "../../services/classes"
 import InputLabel from "@mui/material/InputLabel"
-import TextField from "@mui/material/TextField"
+import Typography from "@mui/material/Typography"
+import { DatePicker } from "@mui/x-date-pickers"
+import BlockService from "../../services/blocks"
 import { useNavigate } from "react-router-dom"
 import FullCalendar from "@fullcalendar/react"
 import HourService from "../../services/hours"
@@ -21,13 +25,16 @@ import { useState, useEffect } from "react"
 import Dialog from "@mui/material/Dialog"
 import Button from "@mui/material/Button"
 import Select from "@mui/material/Select"
+import dayjs, { Dayjs } from "dayjs"
 import Box from "@mui/material/Box"
-import { DatePicker } from "@mui/x-date-pickers"
-import { Dayjs } from "dayjs"
+
+const ALREADY_INSERTED_MESSAGE = "Não foi possível agendar, provavelmente o recurso já está alocado!"
+const HOUR_BLOCKED_MESSAGE = "Não foi possível agendar, este horário está bloqueado!"
 
 type Period = 'matutine' | 'vespertine'
 
 interface ScheduleData {
+  id: number
   date: string
   hourId: number
   classResourceId: number
@@ -36,7 +43,7 @@ interface ScheduleData {
 interface Hour {
   id: number
   start: string
-  stop: string
+  finish: string
   classNumber: number
   createdAt: string
   updatedAt: string
@@ -49,25 +56,32 @@ interface Class {
   teacherId: number
 }
 
-interface ClassResource {
-  classId: number
-  className: string
+interface Block {
+  id: number
+  hourId: number
+  date: string
   period: Period
-  schedule: ScheduleData[]
 }
 
 export default function SchedulePage() {
   const [scheduleData, setScheduleData] = useState<ScheduleData[]>([])
-  const [classResources, setClassResources] = useState<ClassResource[]>([])
+  const [resources, setResources] = useState<any[]>([])
+  const [selectedClassId, setSelectedClassId] = useState<number | undefined>()
+  const [selectedResourceId, setSelectedResourceId] = useState<number | undefined>()
+  const [classes, setClasses] = useState<Class[]>([])
+  const [blocks, setBlocks] = useState<Block[]>([])
   const [hours, setHours] = useState<Hour[]>([])
   const [modalOpen, setModalOpen] = useState(false)
   const [date, setDate] = useState<Dayjs | null>(null)
   const [hourId, setHourId] = useState<number | undefined>()
-  const [classResourceId, setClassResourceId] = useState<number | undefined>()
-  const [selectedTime, setSelectedTime] = useState<string | undefined>()
+  const [allClassResources, setAllClassResources] = useState<any[]>([])
+  const [allResources, setAllResources] = useState<any[]>([])
+  const [classResources, setClassResources] = useState<any[]>([])
   const [selectedPeriod, setSelectedPeriod] = useState<Period>()
-  const [loading, setLoading] = useState<boolean>()
-  const { token, type } = useAppSelector((state) => state.user)
+  const [loading, setLoading] = useState<boolean>(false)
+  const [editingId, setEditingId] = useState<number | undefined>()
+  const [insertWentWrong, setInsertWentWrong] = useState<string>("")
+  const { token, type, userId } = useAppSelector((state) => state.user)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -78,77 +92,143 @@ export default function SchedulePage() {
 
     setSelectedPeriod(sessionStorage.getItem(SESSION_PERIOD_KEY) as Period)
 
-    const fetchSchedule = async () => {
-      const scheduleService = new ScheduleService(token)
-      const fetchedSchedule = await scheduleService.getAllFiltered({})
-      setScheduleData(fetchedSchedule)
-    }
-
-    const fetchHour = async () => {
-      const hourService = new HourService(token)
-      let fetchedHour = await hourService.getAll()
-
-      if (!fetchedHour.length) {
-        await hourService.insertAll()
-        fetchedHour = await hourService.getAll()
-      }
-
-      setHours(fetchedHour)
-    }
-
-    const fetchClassResource = async () => {
-      const classService = new ClassService(token)
-      const fetchedClasses: Class[] = (await classService.getAll()).map((val: any) => val.class)
-      
-      const klassResources: ClassResource[] = []
-      for (const klass of fetchedClasses) {
-        const resources = await classService.getAllResource(klass.id)
-
-        klassResources.push({
-          classId: klass.id,
-          className: klass.name,
-          period: klass.period,
-          schedule: []
-        })
-
-        for (const resource of resources) {
-          console.log(resource)
-        }
-
-        setClassResources(klassResources)
-      }
-    }
-
-    (async () => {
-      setLoading(true)
-
-      await fetchClassResource()
-      await fetchSchedule()
-      await fetchHour()
-
-      setLoading(false)
-    })()
+    fetchAll()
   }, [])
+
+  const fetchAll = async () => {
+    setLoading(true)
+
+    try {
+      const klasses = await fetchClasses()
+      await fetchClassResources(klasses)
+      await fetchResources()
+      await fetchSchedule()
+      await fetchBlocks()
+      await fetchHour()
+    } catch (err) {
+      navigate('/logoff')
+      return
+    }
+
+    setLoading(false)
+  }
+
+  const fetchBlocks = async () => {
+    const blockService = new BlockService(token)
+
+    const blockResponse = await blockService.getAll()
+
+    setBlocks(blockResponse)
+  }
+
+  const fetchSchedule = async () => {
+    const scheduleService = new ScheduleService(token)
+    const fetchedSchedule = await scheduleService.getAllFiltered({})
+
+    setScheduleData(fetchedSchedule.map((val: any) => val.hour_class))
+  }
+
+  const fetchHour = async () => {
+    const hourService = new HourService(token)
+    let fetchedHour = await hourService.getAll()
+
+    if (!fetchedHour.length) {
+      await hourService.insertAll()
+      fetchedHour = await hourService.getAll()
+    }
+
+    setHours(fetchedHour)
+  }
+
+  const fetchClasses = async () => {
+    const classService = new ClassService(token)
+    const fetchedClasses: Class[] = (await classService.getAll()).map((val: any) => val.class)
+    
+    setClasses(fetchedClasses)
+    return fetchedClasses
+  }
+
+  const fetchClassResources = async (klasses: Class[]) => {
+    const classService = new ClassService(token)
+
+    const allResources: any[] = []
+    for (const klass of klasses) {
+      const allResourcesFromClass = (await classService.getAllResource(klass.id))
+        .map((val: any) => val.class_resource)
+
+      allResources.push(...allResourcesFromClass)
+    }
+
+    setAllClassResources(allResources)
+  }
+
+  const fetchResources = async () => {
+    const resourcesService = new ResourcesService(token)
+
+    const allResource = await resourcesService.getAll()
+    setAllResources(allResource)
+  }
 
   const handleAddSchedule = async () => {
     if (!token) {
       return
     }
 
-    setLoading(true)
-
-    const scheduleService = new ScheduleService(token)
     const newSchedule: ScheduleInsertBody = {
       date: date!.toISOString().split("T")[0],
       hourId: hourId!,
-      classResourceId: classResourceId!,
+      classResourceId: classResources.find(
+        (val) => val.classId === selectedClassId && val.resourceId === selectedResourceId
+      )!.id
     }
-    const addedSchedule = await scheduleService.insertOne(newSchedule)
-    setScheduleData([...scheduleData, addedSchedule])
 
-    setLoading(false)
+    const klass = classes.find((val) => val.id === selectedClassId)
+    if (!klass) {
+      return
+    }
+
+    const blockFound = blocks.find((val) => (
+      val.date === newSchedule.date &&
+      val.hourId === newSchedule.hourId &&
+      val.period === klass.period
+    ))
+
+    if (blockFound) {
+      setInsertWentWrong(HOUR_BLOCKED_MESSAGE)
+      return
+    }
+
+    const schedules = scheduleData.filter((val) =>
+      val.date === newSchedule.date &&
+      val.hourId === newSchedule.hourId
+    )
+
+    if (schedules.length > 0) {
+      const resources = allClassResources.filter((val) =>
+        val.resourceId === selectedResourceId
+      )
+
+      if (resources.length > 1) {
+        setInsertWentWrong(ALREADY_INSERTED_MESSAGE)
+        return
+      }
+    }
+
+    setLoading(true)
+
+    let addedSchedule
+    try {
+      const scheduleService = new ScheduleService(token)
+      addedSchedule = await scheduleService.insertOne(newSchedule)
+      setScheduleData([...scheduleData, addedSchedule])
+    } catch (err) {
+      setLoading(false)
+      setInsertWentWrong(ALREADY_INSERTED_MESSAGE)
+      return
+    }
 
     setModalOpen(false)
+    setLoading(false)
     resetForm()
   }
 
@@ -162,39 +242,178 @@ export default function SchedulePage() {
     sessionStorage.setItem(SESSION_PERIOD_KEY, period)
   }
 
+  const handleChangeClassId = async (classId: number) => {
+    setSelectedClassId(classId)
+
+    const classService = new ClassService(token)
+    const getAllResource = await classService.getAllResource(classId)
+    const resources = getAllResource.map((val: any) => val.resource)
+    const klassResources = getAllResource.map((val: any) => val.class_resource)
+
+    setResources(resources)
+    setClassResources(klassResources)
+  }
+
+  const handleEventClick = (arg: EventClickArg) => {
+    const scheduleId = parseInt(arg.event.id)
+    const schedule = scheduleData.find((val) => val.id === scheduleId)
+
+    if (!schedule) {
+      return
+    }
+
+    const klassResource = allClassResources
+      .find((val) => val.id === schedule.classResourceId)
+
+    const klass = classes.find((val) => val.id === klassResource.classId)
+
+    const resource = allResources.find((val) => val.id === klassResource.resourceId)
+
+    setHourId(schedule.hourId)
+    setDate(dayjs(schedule.date))
+    setSelectedClassId(klass!.id)
+    handleChangeClassId(klass!.id)
+    setSelectedResourceId(resource!.id)
+    setEditingId(schedule.id)
+    setModalOpen(true)
+  }
+
+  const handleEventDelete = async () => {
+    if (!editingId) {
+      return
+    }
+
+    const scheduleService = new ScheduleService(token)
+    await scheduleService.deleteOne(editingId)
+
+    setScheduleData((state) => state.filter((val) => val.id !== editingId))
+    handleCloseModal()
+  }
+
+  const prepareHour = (hour: string) => {
+    const [hourStr, minuteStr] = hour.split(':')
+
+    return `${parseInt(hourStr) + 3}:${minuteStr}`
+  }
+
+  const prepareVespertineHour = (hour: string) => {
+    const [hourStr, minuteStr] = hour.split(':')
+
+    // 3 de timezone
+    // 6 de 13:30
+    return `${parseInt(hourStr) + 3 + 6}:${minuteStr}`
+  }
+
+  const getCalendarEvents = (schedule: ScheduleData) => {
+    const klassResource = allClassResources
+      .find((val) => val.id === schedule.classResourceId)
+
+    const klass = classes.find((val) => val.id === klassResource.classId)
+
+    const resource = allResources.find((val) => val.id === klassResource.resourceId)
+
+    const hour = hours.find((hour) => hour.id === schedule.hourId)
+
+    if (!hour || !resource || !klass) {
+      return {}
+    }
+
+    let hourStart = prepareHour(hour.start)
+    let hourFinish = prepareHour(hour.finish)
+
+    if (klass.period === 'vespertine' && selectedPeriod === 'vespertine') {
+      hourStart = prepareVespertineHour(hour.start)
+      hourFinish = prepareVespertineHour(hour.finish)
+    }
+
+    if (klass.period !== selectedPeriod) {
+      return {}
+    }
+
+    return {
+      id: schedule.id,
+      title: `${klass.name} - ${resource.name}`,
+      start: dayjs(`${schedule.date}T${hourStart}:00.000Z`).toDate(),
+      end: dayjs(`${schedule.date}T${hourFinish}:00.000Z`).toDate()
+    }
+  }
+
+  const getCalendarBlocks = (block: Block) => {
+    const hour = hours.find((hour) => hour.id === block.hourId)
+
+    if (!hour) {
+      return {}
+    }
+
+    let hourStart = prepareHour(hour.start)
+    let hourFinish = prepareHour(hour.finish)
+
+    if (block.period === 'vespertine' && selectedPeriod === 'vespertine') {
+      hourStart = prepareVespertineHour(hour.start)
+      hourFinish = prepareVespertineHour(hour.finish)
+    }
+
+    if (block.period !== selectedPeriod) {
+      return {}
+    }
+
+    return {
+      title: 'BLOQUEADO',
+      start: dayjs(`${block.date}T${hourStart}:00.000Z`).toDate(),
+      end: dayjs(`${block.date}T${hourFinish}:00.000Z`).toDate()
+    }
+  }
+
+  const getUserIdFromScheduleId = (scheduleId: number) => {
+    const schedule = scheduleData.find((val) => val.id === scheduleId)
+    const classResource = allClassResources.find((val) => val.id === schedule?.classResourceId)
+    const klass = classes.find((val) => val.id === classResource.id)
+
+    if (!klass) {
+      return
+    }
+
+    return klass.teacherId
+  }
+
   const resetForm = () => {
     setDate(null)
     setHourId(undefined)
-    setClassResourceId(undefined)
+    setInsertWentWrong("")
+    setEditingId(undefined)
+    setSelectedClassId(undefined)
+    setSelectedResourceId(undefined)
   }
 
   return (
     <div style={{ display: "flex", flexDirection: 'column' }}>
       <div style={{ padding: "20px" }}>
-        <Box>
-          <Button
-            variant="contained"
-            onClick={() => setModalOpen(true)}
-          >Marcar horário para recurso</Button>
-        </Box>
         {
           !loading ?
           <>
-            <Box>
-              <Button
-                variant="contained"
-                onClick={() => handleChangePeriod('matutine')}
-              >Matutino</Button>
-              <Button
-                variant="contained"
-                onClick={() => handleChangePeriod('vespertine')}
-              >Vespertino</Button>
+            <Box display={'flex'} justifyContent={'space-between'} mb={2}>
+              <Box>
+                <Button
+                  variant="contained"
+                  onClick={() => setModalOpen(true)}
+                >Marcar horário para recurso</Button>
+              </Box>
+              <Box display={'flex'} gap={2}>
+                <Button
+                  variant="contained"
+                  onClick={() => handleChangePeriod('matutine')}
+                >Matutino</Button>
+                <Button
+                  variant="contained"
+                  onClick={() => handleChangePeriod('vespertine')}
+                >Vespertino</Button>
+              </Box>
             </Box>
             <FullCalendar
               plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
               expandRows={true}
               initialView="timeGridWeek"
-              slotDuration="00:50:00"
+              slotDuration="00:45:00"
               slotMinTime={
                 selectedPeriod === 'matutine' ?
                 { hours: 7, minutes: 30 } :
@@ -206,17 +425,15 @@ export default function SchedulePage() {
                 { hours: 17, minutes: 30 }
               }
               allDaySlot={false}
+              eventClick={handleEventClick}
               selectable={true}
               locale={"pt-br"}
-              events={scheduleData.map((schedule) => {
-                const hour = hours.find((hour) => hour.id === schedule.hourId)
-                if (!hour) {
-                  return {}
-                }
-
-                return {
-                }
-              })}
+              events={
+                [
+                  ...scheduleData.map(getCalendarEvents),
+                  ...blocks.map(getCalendarBlocks)
+                ] as EventSourceInput
+              }
             />
           </>
           :
@@ -227,14 +444,19 @@ export default function SchedulePage() {
         <DialogTitle>Adicionar Evento</DialogTitle>
         <DialogContent>
           <FormControl fullWidth margin="dense">
-            <DatePicker value={date} onChange={(e) => setDate(e)} />
+            <DatePicker
+              minDate={dayjs(new Date())}
+              value={date}
+              onChange={(e) => setDate(e)} readOnly={!!editingId}
+            />
           </FormControl>
 
           <FormControl fullWidth margin="dense">
             <InputLabel>Aula</InputLabel>
             <Select
-              value={selectedTime ?? ""}
-              onChange={(e) => setSelectedTime(e.target.value)}
+              value={hourId ?? ""}
+              onChange={(e) => setHourId(e.target.value as number)}
+              readOnly={!!editingId}
             >
               <MenuItem value={0} disabled></MenuItem>
               {hours.map((val) => (
@@ -250,22 +472,58 @@ export default function SchedulePage() {
           </FormControl>
 
           <FormControl fullWidth margin="dense">
-            <InputLabel>Recurso da Classe</InputLabel>
+            <InputLabel>Classe</InputLabel>
             <Select
-              value={classResourceId}
-              onChange={(e) => setClassResourceId(e.target.value as number)}
+              value={selectedClassId}
+              onChange={(e) => handleChangeClassId(e.target.value as number)}
+              readOnly={!!editingId}
             >
-              <MenuItem value={1}>Recurso 1</MenuItem>
+              {classes.map((val) =>
+                (val.teacherId === userId || ['admin', 'owner'].includes(type)) && (
+                  <MenuItem key={val.id} value={val.id}>{val.name}</MenuItem>
+                )
+              )}
             </Select>
           </FormControl>
+
+          <FormControl fullWidth margin="dense">
+            <InputLabel>Recurso</InputLabel>
+            <Select
+              value={selectedResourceId}
+              onChange={(e) => setSelectedResourceId(e.target.value as number)}
+              readOnly={!!editingId}
+            >
+              {resources.map((val) =>
+                (val.teacherId === userId || ['admin', 'owner'].includes(type)) && (
+                  <MenuItem key={val.id} value={val.id}>{val.name}</MenuItem>
+                )
+              )}
+            </Select>
+          </FormControl>
+
+          <Typography mt={2} align="center" variant="body1">{insertWentWrong}</Typography>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseModal} color="primary">
             Cancelar
           </Button>
-          <Button onClick={handleAddSchedule} color="primary">
-            Adicionar
-          </Button>
+          {!editingId ?
+            <Button
+              disabled={!date || !selectedClassId || !selectedResourceId || !hourId}
+              onClick={handleAddSchedule}
+              color="primary"
+            >
+              Adicionar
+            </Button>
+            :
+            <Button
+              disabled={!['admin', 'owner'].includes(type) && userId !== getUserIdFromScheduleId(editingId)}
+              onClick={handleEventDelete}
+              color="primary"
+            >
+              Excluir
+            </Button>
+          }
         </DialogActions>
       </Dialog>
     </div>

@@ -13,15 +13,16 @@ import LoginPage from "./pages/login"
 import IndexPage from "./pages/index"
 import UsersPage from "./pages/users"
 import { useEffect } from "react"
+import BlocksPage from "./pages/blocks"
 
 function App() {
   const dispatch = useAppDispatch()
 
   useEffect(() => {
-    const token = sessionStorage.getItem(SESSION_TOKEN_KEY);
+    const token = sessionStorage.getItem(SESSION_TOKEN_KEY)
     if (token) {
       dispatch(setUserToken(token))
-      return;
+      return
     }
   }, [])
 
@@ -38,11 +39,12 @@ function App() {
             <Route path="/users" element={<UsersPage />} />
             <Route path="/classes" element={<ClassesPage />} />
             <Route path="/resource" element={<ResourcePage />} />
+            <Route path="/blocks" element={<BlocksPage />} />
           </Route>
         </Route>
       </Routes>
     </BrowserRouter>
-  );
+  )
 }
 
-export default App;
+export default App
