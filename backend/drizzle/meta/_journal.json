@@ -36,6 +36,13 @@
       "when": 1713120266503,
       "tag": "0004_melted_prodigy",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1719711620429,
+      "tag": "0005_striped_vanisher",
+      "breakpoints": true
     }
   ]
 }
