@@ -90,7 +90,7 @@ export default function SchedulePage() {
       return
     }
 
-    setSelectedPeriod(sessionStorage.getItem(SESSION_PERIOD_KEY) as Period)
+    setSelectedPeriod(sessionStorage.getItem(SESSION_PERIOD_KEY) as Period ?? 'matutine')
 
     fetchAll()
   }, [])
@@ -367,7 +367,7 @@ export default function SchedulePage() {
   const getUserIdFromScheduleId = (scheduleId: number) => {
     const schedule = scheduleData.find((val) => val.id === scheduleId)
     const classResource = allClassResources.find((val) => val.id === schedule?.classResourceId)
-    const klass = classes.find((val) => val.id === classResource.id)
+    const klass = classes.find((val) => val.id === classResource.classId)
 
     if (!klass) {
       return

@@ -1,5 +1,6 @@
 import { ClassInsertBody, ClassUpdateBody } from "../../interfaces/class"
 import CircularProgress from "@mui/material/CircularProgress"
+import ResourcesService from "../../services/resources"
 import DialogActions from "@mui/material/DialogActions"
 import DialogContent from "@mui/material/DialogContent"
 import ClassesService from "../../services/classes"
@@ -8,6 +9,7 @@ import FormControl from "@mui/material/FormControl"
 import ClassService from "../../services/classes"
 import { UserType } from "../../slices/userSlice"
 import IconButton from "@mui/material/IconButton"
+import Typography from "@mui/material/Typography"
 import InputLabel from "@mui/material/InputLabel"
 import Container from "@mui/material/Container"
 import TableBody from "@mui/material/TableBody"
@@ -26,8 +28,6 @@ import Select from "@mui/material/Select"
 import Table from "@mui/material/Table"
 import Icon from "@mui/material/Icon"
 import Box from "@mui/material/Box"
-import { Typography } from "@mui/material"
-import ResourcesService from "../../services/resources"
 
 type Period = "matutine" | "vespertine"
 
@@ -65,6 +65,7 @@ export default function ClassPage() {
   const [teachers, setTeachers] = useState<User[]>([])
   const [editingId, setEditingId] = useState<number | undefined>()
   const [loading, setLoading] = useState<boolean>(false)
+  const [wentWrong, setWentWrong] = useState<string>("")
   const { token, type } = useAppSelector((state) => state.user)
   const navigate = useNavigate()
 
@@ -105,6 +106,16 @@ export default function ClassPage() {
     fetchResources()
   }, [])
 
+  useEffect(() => {
+    if (!wentWrong) {
+      return
+    }
+
+    setTimeout(() => {
+      setWentWrong("")
+    }, 5000)
+  }, [wentWrong])
+
   const getClassToSend = () => ({
     name,
     period,
@@ -134,7 +145,7 @@ export default function ClassPage() {
 
     const newClass: ClassInsertBody = getClassToSend()
 
-    const addedClass = await classService.insertOne(newClass)
+    const [addedClass] = await classService.insertOne(newClass)
     setClasses([...classes, addedClass])
     setModalOpen(false)
     resetForm()
@@ -166,8 +177,12 @@ export default function ClassPage() {
     setLoading(true)
 
     const classService = new ClassesService(token)
-    await classService.deleteOne(classId)
-    setClasses(classes.filter((cls) => cls.id !== classId))
+    try {
+      await classService.deleteOne(classId)
+      setClasses(classes.filter((cls) => cls.id !== classId))
+    } catch (err) {
+      setWentWrong("Não foi possível deletar a classe, há agendamentos ou recursos ligados a ela.")
+    }
 
     setLoading(false)
   }
@@ -214,13 +229,16 @@ export default function ClassPage() {
     <div style={{ display: "flex" }}>
       <Container maxWidth="md">
         <h1>Turma</h1>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => setModalOpen(true)}
-        >
-          Adicionar
-        </Button>
+        <Box display={'flex'} alignItems={'center'} gap={2}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => setModalOpen(true)}
+          >
+            Adicionar
+          </Button>
+          <Typography variant="body1">{wentWrong}</Typography>
+        </Box>
         <Dialog
           open={modalOpen}
           onClose={() => setModalOpen(false)}

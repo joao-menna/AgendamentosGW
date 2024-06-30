@@ -63,6 +63,11 @@ export default class ClassService {
       method: "DELETE",
       headers: { Authorization: this.token },
     });
+
+    if (req.status !== 200) {
+      throw new Error()
+    }
+
     const json = req.json();
 
     return json;

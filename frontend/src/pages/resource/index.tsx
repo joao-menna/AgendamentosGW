@@ -4,6 +4,7 @@ import DialogActions from "@mui/material/DialogActions"
 import DialogContent from "@mui/material/DialogContent"
 import DialogTitle from "@mui/material/DialogTitle"
 import IconButton from "@mui/material/IconButton"
+import Typography from "@mui/material/Typography"
 import Container from "@mui/material/Container"
 import TableBody from "@mui/material/TableBody"
 import TableCell from "@mui/material/TableCell"
@@ -30,6 +31,7 @@ export default function ResourcePage() {
   const [editingResourceId, setEditingResourceId] = useState<number | undefined>()
   const [loading, setLoading] = useState<boolean>(false)
   const [name, setName] = useState<string>("")
+  const [wentWrong, setWentWrong] = useState<string>("")
   const { token, type } = useAppSelector((state) => state.user);
   const navigate = useNavigate()
 
@@ -54,6 +56,16 @@ export default function ResourcePage() {
       }
     })()
   }, [])
+
+  useEffect(() => {
+    if (!wentWrong) {
+      return
+    }
+
+    setTimeout(() => {
+      setWentWrong("")
+    }, 5000)
+  }, [wentWrong])
 
   const handleAddResource = async () => {
     const resourcesService = new ResourcesService(token)
@@ -115,11 +127,10 @@ export default function ResourcePage() {
 
     try {
       await resourcesService.deleteOne(resourceId)
-    } catch (error) {
-      console.error("Erro ao excluir recurso", error)
+      setResources(resources.filter((res) => res.id !== resourceId))
+    } catch (err) {
+      setWentWrong("Não foi possível excluir o recurso, provavelmente há classes relacionadas a ele")
     }
-
-    setResources(resources.filter((res) => res.id !== resourceId))
 
     setLoading(false)
   }
@@ -128,13 +139,16 @@ export default function ResourcePage() {
     <div style={{ display: "flex" }}>
       <Container maxWidth="md">
         <h1>Recursos</h1>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => setModalOpen(true)}
-        >
-          Adicionar
-        </Button>
+        <Box display={'flex'} alignItems={'center'} gap={2}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => setModalOpen(true)}
+          >
+            Adicionar
+          </Button>
+          <Typography variant="body1">{wentWrong}</Typography>
+        </Box>
         <Dialog
           open={modalOpen}
           onClose={() => setModalOpen(false)}
