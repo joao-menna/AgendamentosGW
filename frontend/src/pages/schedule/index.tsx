@@ -396,7 +396,7 @@ export default function SchedulePage() {
                 <Button
                   variant="contained"
                   onClick={() => setModalOpen(true)}
-                >Marcar horário para recurso</Button>
+                >Marcar horário</Button>
               </Box>
               <Box display={'flex'} gap={2}>
                 <Button
@@ -493,11 +493,9 @@ export default function SchedulePage() {
               onChange={(e) => setSelectedResourceId(e.target.value as number)}
               readOnly={!!editingId}
             >
-              {resources.map((val) =>
-                (val.teacherId === userId || ['admin', 'owner'].includes(type)) && (
-                  <MenuItem key={val.id} value={val.id}>{val.name}</MenuItem>
-                )
-              )}
+              {resources.map((val) => (
+                <MenuItem key={val.id} value={val.id}>{val.name}</MenuItem>
+              ))}
             </Select>
           </FormControl>
 
