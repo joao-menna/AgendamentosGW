@@ -447,7 +447,9 @@ export default function SchedulePage() {
             <DatePicker
               minDate={dayjs(new Date())}
               value={date}
-              onChange={(e) => setDate(e)} readOnly={!!editingId}
+              onChange={(e: any) => setDate(e)}
+              readOnly={!!editingId}
+              format="DD/MM/YYYY"
             />
           </FormControl>
 

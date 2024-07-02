@@ -162,7 +162,12 @@ export default function BlocksPage() {
           </DialogTitle>
           <DialogContent>
             <FormControl fullWidth margin="dense">
-              <DatePicker minDate={dayjs(new Date())} value={date} onChange={(e) => setDate(e)} />
+              <DatePicker
+                minDate={dayjs(new Date())}
+                value={date}
+                onChange={(e) => setDate(e)}
+                format="DD/MM/YYYY"
+              />
             </FormControl>
 
             <FormControl fullWidth margin="dense">
