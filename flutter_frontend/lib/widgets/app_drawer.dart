@@ -21,9 +21,10 @@ class AppDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      child: Column(
+      child: ListView(
         children: [
           ListView.builder(
+            shrinkWrap: true,
             itemCount: commonDrawerOptions.length,
             itemBuilder: (context, index) {
               final drawerOption = commonDrawerOptions[index];
@@ -37,6 +38,7 @@ class AppDrawer extends StatelessWidget {
           ),
           if (isAdmin)
             ListView.separated(
+              shrinkWrap: true,
               itemCount: adminDrawerOptions.length,
               separatorBuilder: (context, index) {
                 return const Divider();
@@ -53,7 +55,7 @@ class AppDrawer extends StatelessWidget {
             ),
           const Divider(),
           ListView(
-            padding: const EdgeInsets.symmetric(vertical: 36.0),
+            shrinkWrap: true,
             children: [
               ListTile(
                 title: const Text("Deslogar"),

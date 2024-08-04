@@ -1,5 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_frontend/api/users_api.dart';
 import 'package:flutter_frontend/constants/shared_preferences.dart';
+import 'package:flutter_frontend/screens/schedule_screen.dart';
+import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -12,18 +17,49 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _emailTextEditingController = TextEditingController();
   final _passwordTextEditingController = TextEditingController();
+  var _wrongPassword = false;
   var _showPassword = false;
   var _loading = false;
 
   Future<void> deleteTokenIfExists() async {
     var prefs = await SharedPreferences.getInstance();
 
-    prefs.remove(tokenKey);
+    await prefs.remove(tokenKey);
   }
 
   Future<void> login() async {
     setState(() {
       _loading = true;
+    });
+
+    final email = _emailTextEditingController.text;
+    final password = _passwordTextEditingController.text;
+
+    final usersApi = UsersApi();
+    var token = "";
+
+    try {
+      token = await usersApi.login(email, password);
+    } catch (err) {
+      setState(() {
+        _wrongPassword = true;
+        _loading = false;
+      });
+      startWrongPasswordTimer();
+      return;
+    }
+
+    var prefs = await SharedPreferences.getInstance();
+    await prefs.setString(tokenKey, token);
+
+    Get.off(() => const ScheduleScreen());
+  }
+
+  void startWrongPasswordTimer() {
+    Timer(const Duration(seconds: 5), () {
+      setState(() {
+        _wrongPassword = false;
+      });
     });
   }
 
@@ -107,7 +143,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     : const Icon(Icons.login_outlined),
                 onPressed: _loading ? null : login,
                 label: Text(_loading ? "Carregando" : "Entrar"),
-              )
+              ),
+              const SizedBox(
+                height: 16.0,
+              ),
+              if (_wrongPassword)
+                const Text(
+                  "E-mail ou senha inválidos",
+                )
             ],
           ),
         ),

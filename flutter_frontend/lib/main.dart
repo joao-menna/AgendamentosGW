@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_frontend/controllers/user_controller.dart';
 import 'package:flutter_frontend/screens/login_screen.dart';
 import 'package:get/get.dart';
 
@@ -11,6 +12,8 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Get.put(UserController);
+
     return GetMaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData.from(
