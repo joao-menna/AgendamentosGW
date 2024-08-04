@@ -1,3 +1,4 @@
+import 'package:calendar_view/calendar_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/controllers/user_controller.dart';
 import 'package:flutter_frontend/screens/login_screen.dart';
@@ -14,14 +15,18 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     Get.put(UserController);
 
-    return GetMaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData.from(
-        colorScheme: ColorScheme.light(
-          primary: Colors.blue[800]!,
+    return CalendarControllerProvider(
+      controller: EventController(),
+      child: GetMaterialApp(
+        locale: const Locale("pt", "BR"),
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData.from(
+          colorScheme: ColorScheme.light(
+            primary: Colors.blue[800]!,
+          ),
         ),
+        home: const LoginScreen(),
       ),
-      home: const LoginScreen(),
     );
   }
 }

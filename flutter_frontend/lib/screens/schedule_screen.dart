@@ -1,6 +1,10 @@
+import 'package:calendar_view/calendar_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/constants/shared_preferences.dart';
+import 'package:flutter_frontend/functions/format_date.dart';
+import 'package:flutter_frontend/screens/day_schedule_screen.dart';
 import 'package:flutter_frontend/widgets/app_drawer.dart';
+import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ScheduleScreen extends StatefulWidget {
@@ -37,7 +41,28 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
       drawer: AppDrawer(
         isAdmin: _isAdmin,
       ),
-      body: const Placeholder(),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: MonthView(
+          headerStringBuilder: (date, {secondaryDate}) => formatMonthDate(date),
+          startDay: WeekDays.sunday,
+          weekDayStringBuilder: (day) {
+            return switch (day) {
+              0 => "Seg",
+              1 => "Ter",
+              2 => "Qua",
+              3 => "Qui",
+              4 => "Sex",
+              5 => "Sab",
+              6 => "Dom",
+              _ => "",
+            };
+          },
+          onCellTap: (events, date) {
+            Get.to(() => DayScheduleScreen(date: date));
+          },
+        ),
+      ),
     );
   }
 }

@@ -23,17 +23,14 @@ class AppDrawer extends StatelessWidget {
     return Drawer(
       child: ListView(
         children: [
-          ListView.builder(
-            shrinkWrap: true,
-            itemCount: commonDrawerOptions.length,
-            itemBuilder: (context, index) {
-              final drawerOption = commonDrawerOptions[index];
-
-              return ListTile(
-                leading: Icon(drawerOption.icon),
-                title: Text(drawerOption.text),
-                onTap: () => Get.to(() => drawerOption.location),
-              );
+          const ListTile(),
+          ListTile(
+            leading: Icon(commonDrawerOptions[0].icon),
+            title: Text(commonDrawerOptions[0].text),
+            onTap: () {
+              if (Get.currentRoute != "ScheduleScreen") {
+                Get.to(() => commonDrawerOptions[0].location);
+              }
             },
           ),
           if (isAdmin)
@@ -58,7 +55,7 @@ class AppDrawer extends StatelessWidget {
             shrinkWrap: true,
             children: [
               ListTile(
-                title: const Text("Deslogar"),
+                title: const Text("Sair"),
                 leading: const Icon(Icons.logout_outlined),
                 onTap: logoff,
               ),
