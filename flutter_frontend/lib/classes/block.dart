@@ -1,5 +1,5 @@
 class Block {
-  final int id;
+  int id;
   final int hourId;
   final String date;
   final String period;
@@ -7,7 +7,7 @@ class Block {
   final String updatedAt;
 
   Block({
-    required this.id,
+    this.id = 0,
     required this.hourId,
     required this.date,
     required this.period,
