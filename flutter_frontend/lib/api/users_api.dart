@@ -73,6 +73,7 @@ class UsersApi {
 
     final response = await http.post(
       uri,
+      body: jsonEncode(user),
       headers: {
         ...getAuthorizationHeader(token),
         ...getContentTypeHeader(),
@@ -81,18 +82,19 @@ class UsersApi {
 
     checkHttpError(response);
 
-    final user = User.fromJson(
+    final userCreated = User.fromJson(
       jsonDecode(response.body) as Map<String, dynamic>,
     );
 
-    return user;
+    return userCreated;
   }
 
-  Future<User> updateOne(User user) async {
-    final uri = Uri.parse("$baseUrl/api/v1/user");
+  Future<User> updateOne(int id, User user) async {
+    final uri = Uri.parse("$baseUrl/api/v1/user/$id");
 
     final response = await http.put(
       uri,
+      body: jsonEncode(user),
       headers: {
         ...getAuthorizationHeader(token),
         ...getContentTypeHeader(),
@@ -101,11 +103,11 @@ class UsersApi {
 
     checkHttpError(response);
 
-    final user = User.fromJson(
+    final userUpdated = User.fromJson(
       jsonDecode(response.body) as Map<String, dynamic>,
     );
 
-    return user;
+    return userUpdated;
   }
 
   Future<User> deleteOne(User user) async {

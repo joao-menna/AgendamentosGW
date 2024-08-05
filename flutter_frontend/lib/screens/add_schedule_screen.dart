@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_frontend/constants/class_numbers.dart';
 import 'package:flutter_frontend/functions/format_date.dart';
 
 class AddScheduleScreen extends StatefulWidget {
@@ -13,6 +14,7 @@ class AddScheduleScreen extends StatefulWidget {
 class _AddScheduleScreenState extends State<AddScheduleScreen> {
   final _dateTextEditingController = TextEditingController();
   var _date = DateTime.now();
+  int? _classNumber = 0;
 
   Future<void> _selectDate() async {
     final picked = await showDatePicker(
@@ -29,6 +31,12 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
     _date = picked;
     _dateTextEditingController.text = formatFullDate(_date);
   }
+
+  Future<void> _getClassesDropdown() async {}
+
+  Future<void> _getResourcesDropdown() async {}
+
+  Future<void> _addEvent() async {}
 
   @override
   void initState() {
@@ -58,9 +66,24 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
                     padding: const EdgeInsets.all(4.0),
                     child: IconButton(
                       icon: const Icon(Icons.calendar_month_outlined),
-                      onPressed: () => _selectDate(),
+                      onPressed: _selectDate,
                     ),
                   )),
+            ),
+            const SizedBox(
+              height: 8.0,
+            ),
+            DropdownMenu(
+              enableSearch: false,
+              label: const Text("Aula"),
+              width: MediaQuery.of(context).size.width - 16.0,
+              onSelected: (value) => _classNumber = value,
+              dropdownMenuEntries: classNumbers.keys.map((key) {
+                return DropdownMenuEntry(
+                  value: key,
+                  label: classNumbers[key]!,
+                );
+              }).toList(),
             ),
             const Expanded(
               child: SizedBox.expand(),
@@ -69,7 +92,7 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
               children: [
                 Expanded(
                   child: ElevatedButton(
-                    child: const Text("Enviar"),
+                    child: const Text("Criar"),
                     onPressed: () {},
                   ),
                 ),
