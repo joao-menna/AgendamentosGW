@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_frontend/constants/drawer_options.dart';
 import 'package:flutter_frontend/controllers/user_controller.dart';
 import 'package:flutter_frontend/screens/login_screen.dart';
+import 'package:flutter_frontend/screens/schedule_screen.dart';
 import 'package:get/get.dart';
 
 class AppDrawer extends StatelessWidget {
@@ -24,11 +25,11 @@ class AppDrawer extends StatelessWidget {
         children: [
           const ListTile(),
           ListTile(
-            leading: Icon(commonDrawerOptions[0].icon),
-            title: Text(commonDrawerOptions[0].text),
+            leading: const Icon(Icons.calendar_month_outlined),
+            title: const Text("Agendamentos"),
             onTap: () {
               if (Get.currentRoute != "ScheduleScreen") {
-                Get.to(() => commonDrawerOptions[0].location);
+                Get.to(() => const ScheduleScreen());
               }
             },
           ),

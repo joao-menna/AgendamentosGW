@@ -4,15 +4,6 @@ import 'package:flutter_frontend/screens/admin/blocks_screen.dart';
 import 'package:flutter_frontend/screens/admin/classes_screen.dart';
 import 'package:flutter_frontend/screens/admin/resources_screen.dart';
 import 'package:flutter_frontend/screens/admin/users_screen.dart';
-import 'package:flutter_frontend/screens/schedule_screen.dart';
-
-final commonDrawerOptions = <DrawerOption>[
-  DrawerOption(
-    icon: Icons.calendar_month_outlined,
-    text: "Agendamentos",
-    location: const ScheduleScreen(),
-  ),
-];
 
 final adminDrawerOptions = <DrawerOption>[
   DrawerOption(

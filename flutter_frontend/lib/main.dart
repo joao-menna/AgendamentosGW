@@ -1,5 +1,6 @@
 import 'package:calendar_view/calendar_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_frontend/controllers/schedule_controller.dart';
 import 'package:flutter_frontend/controllers/user_controller.dart';
 import 'package:flutter_frontend/screens/login_screen.dart';
 import 'package:get/get.dart';
@@ -14,6 +15,7 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Get.put(UserController());
+    Get.put(ScheduleController());
 
     return CalendarControllerProvider(
       controller: EventController(),

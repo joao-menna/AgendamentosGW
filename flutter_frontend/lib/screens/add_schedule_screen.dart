@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_frontend/classes/klass.dart';
 import 'package:flutter_frontend/constants/class_numbers.dart';
+import 'package:flutter_frontend/controllers/schedule_controller.dart';
+import 'package:flutter_frontend/controllers/user_controller.dart';
 import 'package:flutter_frontend/functions/format_date.dart';
 
 class AddScheduleScreen extends StatefulWidget {
@@ -13,8 +16,10 @@ class AddScheduleScreen extends StatefulWidget {
 
 class _AddScheduleScreenState extends State<AddScheduleScreen> {
   final _dateTextEditingController = TextEditingController();
-  var _date = DateTime.now();
-  int? _classNumber = 0;
+  bool _loadingResourcesDropdown = false;
+  DateTime _date = DateTime.now();
+  int? _classNumber;
+  int? _classId;
 
   Future<void> _selectDate() async {
     final picked = await showDatePicker(
@@ -32,7 +37,20 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
     _dateTextEditingController.text = formatFullDate(_date);
   }
 
-  Future<void> _getClassesDropdown() async {}
+  List<DropdownMenuEntry<int>> _getClassesDropdown() {
+    List<Klass> classes = ScheduleController.to.classes;
+
+    if (UserController.to.type.value == "common") {
+      var userId = UserController.to.id.value;
+      classes.removeWhere((klass) => klass.teacherId != userId);
+    }
+
+    return classes.map(
+      (klass) {
+        return DropdownMenuEntry(value: klass.id, label: klass.name);
+      },
+    ).toList();
+  }
 
   Future<void> _getResourcesDropdown() async {}
 
@@ -84,6 +102,16 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
                   label: classNumbers[key]!,
                 );
               }).toList(),
+            ),
+            const SizedBox(
+              height: 8.0,
+            ),
+            DropdownMenu(
+              enableSearch: false,
+              label: const Text("Classe"),
+              width: MediaQuery.of(context).size.width - 16.0,
+              onSelected: (value) => _classId = value,
+              dropdownMenuEntries: _getClassesDropdown(),
             ),
             const Expanded(
               child: SizedBox.expand(),
