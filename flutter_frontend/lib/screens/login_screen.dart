@@ -2,10 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/api/users_api.dart';
-import 'package:flutter_frontend/constants/shared_preferences.dart';
+import 'package:flutter_frontend/controllers/user_controller.dart';
 import 'package:flutter_frontend/screens/schedule_screen.dart';
 import 'package:get/get.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -18,14 +17,9 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailTextEditingController = TextEditingController();
   final _passwordTextEditingController = TextEditingController();
   var _wrongPassword = false;
+  var _serverOffline = false;
   var _showPassword = false;
   var _loading = false;
-
-  Future<void> deleteTokenIfExists() async {
-    var prefs = await SharedPreferences.getInstance();
-
-    await prefs.remove(tokenKey);
-  }
 
   Future<void> login() async {
     setState(() {
@@ -49,8 +43,27 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
-    var prefs = await SharedPreferences.getInstance();
-    await prefs.setString(tokenKey, token);
+    UserController.to.token.value = token;
+
+    final tokenedUsersApi = UsersApi(token: token);
+    int? id;
+    String? type;
+
+    try {
+      var user = await tokenedUsersApi.getOneByToken();
+      id = user.id;
+      type = user.type;
+    } catch (err) {
+      setState(() {
+        _serverOffline = true;
+        _loading = false;
+      });
+      startWrongPasswordTimer();
+      return;
+    }
+
+    UserController.to.id.value = id;
+    UserController.to.type.value = type;
 
     Get.off(() => const ScheduleScreen());
   }
@@ -59,15 +72,9 @@ class _LoginScreenState extends State<LoginScreen> {
     Timer(const Duration(seconds: 5), () {
       setState(() {
         _wrongPassword = false;
+        _serverOffline = false;
       });
     });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-
-    deleteTokenIfExists();
   }
 
   @override
@@ -150,7 +157,11 @@ class _LoginScreenState extends State<LoginScreen> {
               if (_wrongPassword)
                 const Text(
                   "E-mail ou senha inválidos",
-                )
+                ),
+              if (_serverOffline)
+                const Text(
+                  "O servidor está fora do ar!",
+                ),
             ],
           ),
         ),

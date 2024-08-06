@@ -26,7 +26,6 @@ class _DayScheduleScreenState extends State<DayScheduleScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Agendamentos GW"),
         actions: [
           Padding(
             padding: const EdgeInsets.all(8.0),

@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/constants/drawer_options.dart';
-import 'package:flutter_frontend/constants/shared_preferences.dart';
+import 'package:flutter_frontend/controllers/user_controller.dart';
 import 'package:flutter_frontend/screens/login_screen.dart';
 import 'package:get/get.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class AppDrawer extends StatelessWidget {
   const AppDrawer({super.key, required this.isAdmin});
@@ -11,9 +10,9 @@ class AppDrawer extends StatelessWidget {
   final bool isAdmin;
 
   Future<void> logoff() async {
-    final prefs = await SharedPreferences.getInstance();
-
-    await prefs.remove(tokenKey);
+    UserController.to.id.value = 0;
+    UserController.to.token.value = "";
+    UserController.to.type.value = "common";
 
     Get.off(() => const LoginScreen());
   }
@@ -34,11 +33,19 @@ class AppDrawer extends StatelessWidget {
             },
           ),
           if (isAdmin)
+            const Divider(
+              height: 0.1,
+              thickness: 0.1,
+            ),
+          if (isAdmin)
             ListView.separated(
               shrinkWrap: true,
               itemCount: adminDrawerOptions.length,
               separatorBuilder: (context, index) {
-                return const Divider();
+                return const Divider(
+                  height: 0.1,
+                  thickness: 0.1,
+                );
               },
               itemBuilder: (context, index) {
                 final drawerOption = adminDrawerOptions[index];
@@ -50,7 +57,10 @@ class AppDrawer extends StatelessWidget {
                 );
               },
             ),
-          const Divider(),
+          const Divider(
+            height: 0.1,
+            thickness: 0.1,
+          ),
           ListView(
             shrinkWrap: true,
             children: [

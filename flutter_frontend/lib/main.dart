@@ -13,7 +13,7 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Get.put(UserController);
+    Get.put(UserController());
 
     return CalendarControllerProvider(
       controller: EventController(),

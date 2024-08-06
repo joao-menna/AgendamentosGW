@@ -3,16 +3,16 @@ class User {
   final String name;
   final String email;
   final String type;
-  final String createdAt;
-  final String updatedAt;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
 
   User({
     this.id = 0,
+    this.type = "common",
     required this.name,
     required this.email,
-    required this.type,
-    required this.createdAt,
-    required this.updatedAt,
+    this.createdAt,
+    this.updatedAt,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -20,8 +20,8 @@ class User {
       {
         "id": int id,
         "name": String name,
-        "email": String email,
         "type": String type,
+        "email": String email,
         "createdAt": String createdAt,
         "updatedAt": String updatedAt,
       } =>
@@ -30,8 +30,20 @@ class User {
           name: name,
           email: email,
           type: type,
-          createdAt: createdAt,
-          updatedAt: updatedAt,
+          createdAt: DateTime.parse(createdAt),
+          updatedAt: DateTime.parse(updatedAt),
+        ),
+      {
+        "id": int id,
+        "name": String name,
+        "type": String type,
+        "email": String email,
+      } =>
+        User(
+          id: id,
+          name: name,
+          type: type,
+          email: email,
         ),
       _ => throw const FormatException("User: wrong format"),
     };
