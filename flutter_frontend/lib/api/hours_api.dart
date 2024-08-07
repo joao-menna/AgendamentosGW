@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter_frontend/classes/hour.dart';
 import 'package:flutter_frontend/constants/base_url.dart';
+import 'package:flutter_frontend/functions/check_http_error.dart';
 import 'package:flutter_frontend/functions/headers.dart';
 import 'package:http/http.dart' as http;
 
@@ -19,6 +20,8 @@ class HoursApi {
         ...getAuthorizationHeader(token),
       },
     );
+
+    checkHttpError(response);
 
     final hourList = (jsonDecode(response.body) as List<Map<String, dynamic>>)
         .map((hour) => Hour.fromJson(hour))

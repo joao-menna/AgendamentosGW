@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:flutter_frontend/classes/class_resource.dart';
 import 'package:flutter_frontend/classes/klass.dart';
-import 'package:flutter_frontend/classes/resource.dart';
 import 'package:flutter_frontend/constants/base_url.dart';
 import 'package:flutter_frontend/functions/check_http_error.dart';
 import 'package:flutter_frontend/functions/headers.dart';
@@ -126,7 +125,7 @@ class ClassesApi {
     return klass;
   }
 
-  Future<List<Resource>> getAllResource(int classId) async {
+  Future<List<ClassResource>> getAllResource(int classId) async {
     final uri = Uri.parse("$baseUrl/api/v1/class/$classId/resource");
 
     final response = await http.get(
@@ -138,10 +137,10 @@ class ClassesApi {
 
     checkHttpError(response);
 
-    final resourceList =
-        (jsonDecode(response.body) as List<Map<String, dynamic>>)
-            .map((resource) => Resource.fromJson(resource["resource"]))
-            .toList();
+    final resourceList = (jsonDecode(response.body)
+            as List<Map<String, dynamic>>)
+        .map((resource) => ClassResource.fromJson(resource["class_resource"]))
+        .toList();
 
     return resourceList;
   }

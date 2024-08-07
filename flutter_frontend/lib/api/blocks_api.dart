@@ -28,11 +28,18 @@ class BlocksApi {
     return blocks;
   }
 
-  Future<Block> insertOne() async {
+  Future<Block> insertOne(int hourId, String date, String period) async {
     final uri = Uri.parse("$baseUrl/api/v1/block");
 
     final response = await http.post(
       uri,
+      body: jsonEncode(
+        {
+          "hourId": hourId,
+          "date": date,
+          "period": period,
+        },
+      ),
       headers: {
         ...getAuthorizationHeader(token),
         ...getContentTypeHeader(),

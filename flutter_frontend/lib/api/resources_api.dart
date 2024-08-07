@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter_frontend/classes/resource.dart';
 import 'package:flutter_frontend/constants/base_url.dart';
+import 'package:flutter_frontend/functions/check_http_error.dart';
 import 'package:flutter_frontend/functions/headers.dart';
 import 'package:http/http.dart' as http;
 
@@ -20,6 +21,8 @@ class ResourcesApi {
       },
     );
 
+    checkHttpError(response);
+
     final resources = (jsonDecode(response.body) as List<Map<String, dynamic>>)
         .map((resource) => Resource.fromJson(resource))
         .toList();
@@ -36,6 +39,8 @@ class ResourcesApi {
         ...getAuthorizationHeader(token),
       },
     );
+
+    checkHttpError(response);
 
     final resource = Resource.fromJson(
       jsonDecode(response.body) as Map<String, dynamic>,
@@ -56,6 +61,8 @@ class ResourcesApi {
       },
     );
 
+    checkHttpError(response);
+
     final resource = Resource.fromJson(
       jsonDecode(response.body) as Map<String, dynamic>,
     );
@@ -75,6 +82,8 @@ class ResourcesApi {
       },
     );
 
+    checkHttpError(response);
+
     final resource = Resource.fromJson(
       jsonDecode(response.body) as Map<String, dynamic>,
     );
@@ -91,6 +100,8 @@ class ResourcesApi {
         ...getAuthorizationHeader(token),
       },
     );
+
+    checkHttpError(response);
 
     final resource = Resource.fromJson(
       jsonDecode(response.body) as Map<String, dynamic>,

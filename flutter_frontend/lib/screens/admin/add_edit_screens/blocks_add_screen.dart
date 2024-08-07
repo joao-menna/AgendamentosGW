@@ -1,32 +1,29 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_frontend/classes/klass.dart';
+import 'package:flutter_frontend/api/blocks_api.dart';
 import 'package:flutter_frontend/constants/class_numbers.dart';
-import 'package:flutter_frontend/controllers/schedule_controller.dart';
 import 'package:flutter_frontend/controllers/user_controller.dart';
 import 'package:flutter_frontend/functions/format_date.dart';
 
-class AddScheduleScreen extends StatefulWidget {
-  const AddScheduleScreen({super.key, required this.date});
-
-  final DateTime date;
+class BlocksAddScreen extends StatefulWidget {
+  const BlocksAddScreen({super.key});
 
   @override
-  State<AddScheduleScreen> createState() => _AddScheduleScreenState();
+  State<BlocksAddScreen> createState() => _BlocksAddScreenState();
 }
 
-class _AddScheduleScreenState extends State<AddScheduleScreen> {
+class _BlocksAddScreenState extends State<BlocksAddScreen> {
   final _dateTextEditingController = TextEditingController();
-  bool _loadingResourcesDropdown = false;
-  DateTime _date = DateTime.now();
-  int? _classNumber;
-  int? _classId;
+  final _formKey = GlobalKey<FormState>();
+  String _period = "matutine";
+  int? _classNumber = 0;
+  DateTime? _date;
 
   Future<void> _selectDate() async {
     final picked = await showDatePicker(
       context: context,
       firstDate: DateTime.now(),
       lastDate: DateTime.utc(2030, 12, 31),
-      initialDate: _date,
+      initialDate: DateTime.parse(_dateTextEditingController.text),
     );
 
     if (picked == null) {
@@ -34,49 +31,49 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
     }
 
     _date = picked;
-    _dateTextEditingController.text = formatFullDate(_date);
+    _dateTextEditingController.text = formatFullDate(picked);
   }
 
-  List<DropdownMenuEntry<int>> _getClassesDropdown() {
-    List<Klass> classes = ScheduleController.to.classes;
+  Future<void> _submitForm() async {
+    final token = UserController.to.token.value;
+    final blocksApi = BlocksApi(token: token);
 
-    if (UserController.to.type.value == "common") {
-      var userId = UserController.to.id.value;
-      classes.removeWhere((klass) => klass.teacherId != userId);
+    if (_classNumber == null || _date == null) {
+      return;
     }
 
-    return classes.map(
-      (klass) {
-        return DropdownMenuEntry(value: klass.id, label: klass.name);
-      },
-    ).toList();
-  }
-
-  Future<void> _getResourcesDropdown() async {}
-
-  Future<void> _addEvent() async {}
-
-  @override
-  void initState() {
-    super.initState();
-
-    _date = widget.date;
-    _dateTextEditingController.text = formatFullDate(_date);
+    await blocksApi.insertOne(
+      _classNumber!,
+      _date!.toIso8601String().split("T")[0],
+      _period,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Adicionar evento"),
+        actions: [
+          IconButton(
+            onPressed: _submitForm,
+            icon: const Icon(Icons.check_outlined),
+          ),
+        ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
+      body: Form(
+        key: _formKey,
         child: Column(
           children: [
-            TextField(
+            TextFormField(
               controller: _dateTextEditingController,
               readOnly: true,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return "Campo inválido";
+                }
+
+                return null;
+              },
               decoration: InputDecoration(
                 border: const OutlineInputBorder(),
                 label: const Text("Data"),
@@ -107,23 +104,26 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
             const SizedBox(
               height: 8.0,
             ),
-            DropdownMenu(
-              enableSearch: false,
-              label: const Text("Classe"),
-              width: MediaQuery.of(context).size.width - 16.0,
-              onSelected: (value) => _classId = value,
-              dropdownMenuEntries: _getClassesDropdown(),
-            ),
-            const Expanded(
-              child: SizedBox.expand(),
-            ),
-            Row(
+            ListView(
+              shrinkWrap: true,
               children: [
-                Expanded(
-                  child: ElevatedButton(
-                    child: const Text("Criar"),
-                    onPressed: () {},
-                  ),
+                Radio(
+                  value: "matutine",
+                  groupValue: "period",
+                  onChanged: (value) {
+                    setState(() {
+                      _period = value!;
+                    });
+                  },
+                ),
+                Radio(
+                  value: "vespertine",
+                  groupValue: "period",
+                  onChanged: (value) {
+                    setState(() {
+                      _period = value!;
+                    });
+                  },
                 ),
               ],
             ),
