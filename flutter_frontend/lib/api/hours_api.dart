@@ -23,7 +23,7 @@ class HoursApi {
 
     checkHttpError(response);
 
-    final hourList = (jsonDecode(response.body) as List<Map<String, dynamic>>)
+    final hourList = (jsonDecode(response.body) as List<dynamic>)
         .map((hour) => Hour.fromJson(hour))
         .toList();
 

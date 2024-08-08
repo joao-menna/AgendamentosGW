@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/controllers/schedule_controller.dart';
+import 'package:flutter_frontend/screens/admin/add_edit_screens/blocks_add_screen.dart';
 import 'package:get/get.dart';
 
 class BlocksScreen extends StatefulWidget {
@@ -15,6 +16,15 @@ class _BlocksScreenState extends State<BlocksScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Bloqueios"),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: IconButton(
+              onPressed: () => Get.to(() => const BlocksAddScreen()),
+              icon: const Icon(Icons.add_circle_outline),
+            ),
+          )
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),

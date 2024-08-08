@@ -65,8 +65,9 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
       );
 
       final date = DateTime.parse(schedule.hourClass.date);
-      final startTime = DateTime.parse("$date ${hourUsed.start}:00");
-      final endTime = DateTime.parse("$date ${hourUsed.finish}:00");
+      final dateStr = date.toIso8601String().split("T")[0];
+      final startTime = DateTime.parse("$dateStr ${hourUsed.start}:00");
+      final endTime = DateTime.parse("$dateStr ${hourUsed.finish}:00");
 
       final event = CalendarEventData(
         title: "${schedule.klass.name} - ${resourceUsed.name}",

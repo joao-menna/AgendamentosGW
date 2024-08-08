@@ -24,7 +24,7 @@ class ClassesApi {
 
     checkHttpError(response);
 
-    final classes = (jsonDecode(response.body) as List<Map<String, dynamic>>)
+    final classes = (jsonDecode(response.body) as List<dynamic>)
         .map((klass) => Klass.fromJson(klass["class"]))
         .toList();
 
@@ -137,8 +137,7 @@ class ClassesApi {
 
     checkHttpError(response);
 
-    final resourceList = (jsonDecode(response.body)
-            as List<Map<String, dynamic>>)
+    final resourceList = (jsonDecode(response.body) as List<dynamic>)
         .map((resource) => ClassResource.fromJson(resource["class_resource"]))
         .toList();
 

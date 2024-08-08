@@ -40,7 +40,7 @@ class SchedulesApi {
 
     checkHttpError(response);
 
-    final schedules = (jsonDecode(response.body) as List<Map<String, dynamic>>)
+    final schedules = (jsonDecode(response.body) as List<dynamic>)
         .map((schedule) => SchedulesOutput.fromJson(schedule))
         .toList();
 

@@ -23,7 +23,7 @@ class ResourcesApi {
 
     checkHttpError(response);
 
-    final resources = (jsonDecode(response.body) as List<Map<String, dynamic>>)
+    final resources = (jsonDecode(response.body) as List<dynamic>)
         .map((resource) => Resource.fromJson(resource))
         .toList();
 
