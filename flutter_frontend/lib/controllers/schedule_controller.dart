@@ -9,10 +9,10 @@ import 'package:get/get.dart';
 class ScheduleController extends GetxController {
   static ScheduleController get to => Get.find();
 
-  List<Block> blocks = <Block>[].obs;
-  List<SchedulesOutput> schedules = <SchedulesOutput>[].obs;
-  List<Hour> hours = <Hour>[].obs;
-  List<Klass> classes = <Klass>[].obs;
-  List<Resource> resources = <Resource>[].obs;
-  List<ClassResource> classResources = <ClassResource>[].obs;
+  var blocks = <Block>[].obs;
+  var schedules = <SchedulesOutput>[].obs;
+  var hours = <Hour>[].obs;
+  var classes = <Klass>[].obs;
+  var resources = <Resource>[].obs;
+  var classResources = <ClassResource>[].obs;
 }

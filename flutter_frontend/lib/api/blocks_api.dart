@@ -21,7 +21,6 @@ class BlocksApi {
 
     checkHttpError(response);
 
-    print(response.body);
     final blocks = (jsonDecode(response.body) as List<dynamic>)
         .map((json) => Block.fromJson(json))
         .toList();

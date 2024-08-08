@@ -1,5 +1,10 @@
+import 'package:calendar_view/calendar_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_frontend/api/blocks_api.dart';
+import 'package:flutter_frontend/constants/schedule_colors.dart';
 import 'package:flutter_frontend/controllers/schedule_controller.dart';
+import 'package:flutter_frontend/controllers/user_controller.dart';
+import 'package:flutter_frontend/functions/format_date.dart';
 import 'package:flutter_frontend/screens/admin/add_edit_screens/blocks_add_screen.dart';
 import 'package:get/get.dart';
 
@@ -11,6 +16,49 @@ class BlocksScreen extends StatefulWidget {
 }
 
 class _BlocksScreenState extends State<BlocksScreen> {
+  Future<void> _removeBlock(int blockId) async {
+    final token = UserController.to.token.value;
+    final blocksApi = BlocksApi(token: token);
+
+    try {
+      final block = await blocksApi.deleteOne(blockId);
+
+      ScheduleController.to.blocks.removeWhere(
+        (blockEl) => blockEl.id == blockId,
+      );
+
+      final hourUsed = ScheduleController.to.hours.singleWhere(
+        (hour) => hour.id == block.hourId,
+      );
+
+      final date = DateTime.parse(block.date);
+      final dateStr = date.toIso8601String().split("T")[0];
+      DateTime startTime = DateTime.parse("$dateStr ${hourUsed.start}:00");
+      DateTime endTime = DateTime.parse("$dateStr ${hourUsed.finish}:00");
+
+      if (block.period == "vespertine") {
+        const duration = Duration(hours: 6);
+
+        startTime = startTime.add(duration);
+        endTime = endTime.add(duration);
+      }
+
+      CalendarControllerProvider.of(context).controller.removeWhere(
+            (ev) =>
+                ev.date == date &&
+                ev.startTime == startTime &&
+                ev.endTime == endTime &&
+                ev.color == blockColor,
+          );
+    } catch (err) {
+      const snackBar = SnackBar(
+        content: Text("Erro ao remover bloqueio"),
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,10 +93,13 @@ class _BlocksScreenState extends State<BlocksScreen> {
                 _ => 'Aula não identificada'
               };
 
+              final date = DateTime.parse(block.date);
+              final dateFormatted = formatFullDate(date);
+
               return ListTile(
-                title: Text("${block.date} - $hourNumberClassText"),
+                title: Text("$dateFormatted - $hourNumberClassText"),
                 trailing: IconButton(
-                  onPressed: () {},
+                  onPressed: () => _removeBlock(block.id),
                   icon: const Icon(Icons.delete_forever_outlined),
                 ),
               );

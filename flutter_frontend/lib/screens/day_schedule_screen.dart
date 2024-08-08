@@ -1,5 +1,6 @@
 import 'package:calendar_view/calendar_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_frontend/functions/format_date.dart';
 import 'package:flutter_frontend/screens/add_schedule_screen.dart';
 import 'package:get/get.dart';
 
@@ -39,9 +40,15 @@ class _DayScheduleScreenState extends State<DayScheduleScreen> {
         ],
       ),
       body: DayView(
+        keepScrollOffset: true,
         startHour: 7,
         endHour: 18,
         initialDay: widget.date,
+        heightPerMinute: 1.2,
+        showHalfHours: true,
+        timeStringBuilder: (date, {secondaryDate}) {
+          return formatTimeWithoutSeconds(date);
+        },
         onPageChange: (date, page) {
           setState(() {
             currentDate = date;

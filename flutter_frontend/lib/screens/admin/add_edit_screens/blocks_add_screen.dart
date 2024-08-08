@@ -1,6 +1,8 @@
+import 'package:calendar_view/calendar_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_frontend/api/blocks_api.dart';
 import 'package:flutter_frontend/constants/class_numbers.dart';
+import 'package:flutter_frontend/constants/schedule_colors.dart';
 import 'package:flutter_frontend/controllers/schedule_controller.dart';
 import 'package:flutter_frontend/controllers/user_controller.dart';
 import 'package:flutter_frontend/functions/format_date.dart';
@@ -44,13 +46,39 @@ class _BlocksAddScreenState extends State<BlocksAddScreen> {
     }
 
     try {
+      final hourUsed = ScheduleController.to.hours.singleWhere(
+        (hour) => hour.classNumber == _classNumber,
+      );
+
       final block = await blocksApi.insertOne(
-        _classNumber!,
+        hourUsed.id,
         _date!.toIso8601String().split("T")[0],
         _period,
       );
 
       ScheduleController.to.blocks.add(block);
+
+      final date = DateTime.parse(block.date);
+      final dateStr = date.toIso8601String().split("T")[0];
+      DateTime startTime = DateTime.parse("$dateStr ${hourUsed.start}:00");
+      DateTime endTime = DateTime.parse("$dateStr ${hourUsed.finish}:00");
+
+      if (_period == "vespertine") {
+        const duration = Duration(hours: 6);
+
+        startTime = startTime.add(duration);
+        endTime = endTime.add(duration);
+      }
+
+      final event = CalendarEventData(
+        title: "Bloqueado",
+        date: _date!,
+        startTime: startTime,
+        endTime: endTime,
+        color: blockColor,
+      );
+
+      CalendarControllerProvider.of(context).controller.add(event);
     } catch (err) {
       const snackBar = SnackBar(
         content: Text("Erro ao adicionar bloqueio"),

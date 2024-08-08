@@ -13,6 +13,13 @@ String formatFullDate(DateTime date) {
   return "$day/$month/$year";
 }
 
+String formatTimeWithoutSeconds(DateTime date) {
+  final hour = addZeroToBack(date.hour);
+  final minute = addZeroToBack(date.minute);
+
+  return "$hour:$minute";
+}
+
 String addZeroToBack(int timePart) {
   if (timePart < 10) {
     return "0$timePart";
