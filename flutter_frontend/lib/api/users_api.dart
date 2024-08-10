@@ -23,7 +23,7 @@ class UsersApi {
 
     checkHttpError(response);
 
-    final users = (jsonDecode(response.body) as List<Map<String, dynamic>>)
+    final users = (jsonDecode(response.body) as List<dynamic>)
         .map((user) => User.fromJson(user))
         .toList();
 

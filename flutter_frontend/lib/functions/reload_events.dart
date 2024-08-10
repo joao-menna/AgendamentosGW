@@ -24,6 +24,9 @@ Future<void> reloadEvents(BuildContext context) async {
   final classes = (await classesApi.getAll());
   final resources = (await resourcesApi.getAll());
 
+  classes.sort((a, b) => a.name.compareTo(b.name));
+  resources.sort((a, b) => a.name.compareTo(b.name));
+
   ScheduleController.to.blocks.value = blocks;
   ScheduleController.to.schedules.value = schedules;
   ScheduleController.to.hours.value = hours;
