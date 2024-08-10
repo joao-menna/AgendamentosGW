@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_frontend/api/classes_api.dart';
 import 'package:flutter_frontend/classes/klass.dart';
 import 'package:flutter_frontend/controllers/schedule_controller.dart';
+import 'package:flutter_frontend/controllers/user_controller.dart';
 import 'package:flutter_frontend/screens/admin/add_edit_screens/classes_add_screen.dart';
 import 'package:get/get.dart';
 
@@ -24,7 +26,26 @@ class _ClassesScreenState extends State<ClassesScreen> {
     }
   }
 
-  Future<void> _deleteClass() async {}
+  Future<void> _deleteClass(int classId) async {
+    final token = UserController.to.token.value;
+    final classesApi = ClassesApi(token: token);
+
+    try {
+      final deletedClass = await classesApi.deleteOne(classId);
+
+      ScheduleController.to.classes
+          .removeWhere((klass) => klass.id == deletedClass.id);
+    } catch (err) {
+      const snackBar = SnackBar(
+        content: Text(
+          "Não foi possível deletar a classe, é necessário deletar "
+          "os recursos relacionados e os agendamentos antigos",
+        ),
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +83,7 @@ class _ClassesScreenState extends State<ClassesScreen> {
                       width: 8.0,
                     ),
                     IconButton(
-                      onPressed: _deleteClass,
+                      onPressed: () => _deleteClass(klass.id),
                       icon: const Icon(Icons.delete_forever_outlined),
                     ),
                   ],

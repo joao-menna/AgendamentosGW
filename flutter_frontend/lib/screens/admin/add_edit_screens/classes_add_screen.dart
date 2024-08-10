@@ -102,8 +102,9 @@ class _ClassesAddScreenState extends State<ClassesAddScreen> {
 
   Future<void> _submitForm() async {
     if (_period == null || _teacherId == null) {
-      const snackBar =
-          SnackBar(content: Text("Preencha os campos corretamente"));
+      const snackBar = SnackBar(
+        content: Text("Preencha os campos corretamente"),
+      );
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
       return;
     }
@@ -122,6 +123,7 @@ class _ClassesAddScreenState extends State<ClassesAddScreen> {
           period,
           teacherId,
         );
+
         ScheduleController.to.classes.add(klass);
       } else {
         final updatedKlass = await classesApi.updateOne(
@@ -143,6 +145,7 @@ class _ClassesAddScreenState extends State<ClassesAddScreen> {
       const snackBar = SnackBar(
         content: Text("Não foi possível concluir a operação"),
       );
+
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
       return;
     }

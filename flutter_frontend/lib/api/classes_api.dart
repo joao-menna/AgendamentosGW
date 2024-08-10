@@ -69,7 +69,7 @@ class ClassesApi {
     checkHttpError(response);
 
     final klass = Klass.fromJson(
-      (jsonDecode(response.body) as Map<String, dynamic>)["class"],
+      (jsonDecode(response.body) as List<dynamic>)[0],
     );
 
     return klass;
