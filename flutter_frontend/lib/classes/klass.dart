@@ -1,10 +1,10 @@
 class Klass {
   final int id;
-  final String name;
-  final String period;
-  final int teacherId;
-  final String createdAt;
-  final String updatedAt;
+  String name;
+  String period;
+  int teacherId;
+  String createdAt;
+  String updatedAt;
 
   Klass({
     this.id = 0,
