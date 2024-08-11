@@ -15,14 +15,20 @@ class ScheduleScreen extends StatefulWidget {
 }
 
 class _ScheduleScreenState extends State<ScheduleScreen> {
+  var _isLoading = true;
   var _isAdmin = false;
 
   Future<void> loadPrefs() async {
     setState(() {
       _isAdmin = ["admin", "owner"].contains(UserController.to.type.value);
+      _isLoading = true;
     });
 
     await reloadEvents(context);
+
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   @override
@@ -47,35 +53,43 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
           ),
         ],
       ),
-      drawer: AppDrawer(
-        isAdmin: _isAdmin,
-      ),
-      body: RefreshIndicator(
-        onRefresh: loadPrefs,
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: MonthView(
-            headerStringBuilder: (date, {secondaryDate}) =>
-                formatMonthDate(date),
-            startDay: WeekDays.sunday,
-            weekDayStringBuilder: (day) {
-              return switch (day) {
-                0 => "Seg",
-                1 => "Ter",
-                2 => "Qua",
-                3 => "Qui",
-                4 => "Sex",
-                5 => "Sab",
-                6 => "Dom",
-                _ => "",
-              };
-            },
-            onCellTap: (events, date) {
-              Get.to(() => DayScheduleScreen(date: date));
-            },
-          ),
-        ),
-      ),
+      drawer: _isLoading
+          ? const Drawer(
+              child: Center(child: CircularProgressIndicator()),
+            )
+          : AppDrawer(
+              isAdmin: _isAdmin,
+            ),
+      body: _isLoading
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
+          : RefreshIndicator(
+              onRefresh: loadPrefs,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: MonthView(
+                  headerStringBuilder: (date, {secondaryDate}) =>
+                      formatMonthDate(date),
+                  startDay: WeekDays.sunday,
+                  weekDayStringBuilder: (day) {
+                    return switch (day) {
+                      0 => "Seg",
+                      1 => "Ter",
+                      2 => "Qua",
+                      3 => "Qui",
+                      4 => "Sex",
+                      5 => "Sab",
+                      6 => "Dom",
+                      _ => "",
+                    };
+                  },
+                  onCellTap: (events, date) {
+                    Get.to(() => DayScheduleScreen(date: date));
+                  },
+                ),
+              ),
+            ),
     );
   }
 }

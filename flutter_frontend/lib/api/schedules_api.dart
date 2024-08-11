@@ -78,7 +78,7 @@ class SchedulesApi {
     return schedule;
   }
 
-  Future<HourClass> deleteOne(int id) async {
+  Future<void> deleteOne(int id) async {
     final uri = Uri.parse("$baseUrl/api/v1/schedule/$id");
 
     final response = await http.delete(
@@ -89,11 +89,5 @@ class SchedulesApi {
     );
 
     checkHttpError(response);
-
-    final schedule = HourClass.fromJson(
-      jsonDecode(response.body) as Map<String, dynamic>,
-    );
-
-    return schedule;
   }
 }
