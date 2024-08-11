@@ -1,6 +1,6 @@
 class Resource {
   int id;
-  final String name;
+  String name;
   final String createdAt;
   final String updatedAt;
 

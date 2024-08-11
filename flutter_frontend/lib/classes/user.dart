@@ -1,8 +1,8 @@
 class User {
   int id;
-  final String name;
-  final String email;
-  final String type;
+  String name;
+  String email;
+  String type;
   final DateTime? createdAt;
   final DateTime? updatedAt;
 

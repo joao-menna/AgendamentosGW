@@ -155,6 +155,7 @@ class _ClassesAddScreenState extends State<ClassesAddScreen> {
 
   Future<void> _loadClass(Klass klass) async {
     _nameTextEditingController.text = klass.name;
+
     setState(() {
       _period = klass.period;
       _teacherId = klass.teacherId;
