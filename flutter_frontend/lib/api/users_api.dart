@@ -68,12 +68,24 @@ class UsersApi {
     return user;
   }
 
-  Future<User> insertOne(User user) async {
+  Future<User> insertOne(
+    String name,
+    String email,
+    String password,
+    String type,
+  ) async {
     final uri = Uri.parse("$baseUrl/api/v1/user");
 
     final response = await http.post(
       uri,
-      body: jsonEncode(user),
+      body: jsonEncode(
+        {
+          "name": name,
+          "email": email,
+          "password": password,
+          "type": type,
+        },
+      ),
       headers: {
         ...getAuthorizationHeader(token),
         ...getContentTypeHeader(),
@@ -89,12 +101,31 @@ class UsersApi {
     return userCreated;
   }
 
-  Future<User> updateOne(int id, User user) async {
+  Future<User> updateOne(
+    int id,
+    String? name,
+    String? email,
+    String? password,
+    String? type,
+  ) async {
     final uri = Uri.parse("$baseUrl/api/v1/user/$id");
 
     final response = await http.put(
       uri,
-      body: jsonEncode(user),
+      body: jsonEncode(
+        password!.isEmpty
+            ? {
+                "name": name,
+                "email": email,
+                "type": type,
+              }
+            : {
+                "name": name,
+                "email": email,
+                "password": password,
+                "type": type,
+              },
+      ),
       headers: {
         ...getAuthorizationHeader(token),
         ...getContentTypeHeader(),
@@ -104,20 +135,19 @@ class UsersApi {
     checkHttpError(response);
 
     final userUpdated = User.fromJson(
-      jsonDecode(response.body) as Map<String, dynamic>,
+      (jsonDecode(response.body) as Map<String, dynamic>),
     );
 
     return userUpdated;
   }
 
-  Future<User> deleteOne(User user) async {
-    final uri = Uri.parse("$baseUrl/api/v1/user");
+  Future<User> deleteOne(int id) async {
+    final uri = Uri.parse("$baseUrl/api/v1/user/$id");
 
     final response = await http.delete(
       uri,
       headers: {
         ...getAuthorizationHeader(token),
-        ...getContentTypeHeader(),
       },
     );
 

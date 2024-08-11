@@ -3,8 +3,8 @@ class User {
   String name;
   String email;
   String type;
-  final DateTime? createdAt;
-  final DateTime? updatedAt;
+  final String? createdAt;
+  final String? updatedAt;
 
   User({
     this.id = 0,
@@ -30,8 +30,8 @@ class User {
           name: name,
           email: email,
           type: type,
-          createdAt: DateTime.parse(createdAt),
-          updatedAt: DateTime.parse(updatedAt),
+          createdAt: createdAt,
+          updatedAt: updatedAt,
         ),
       {
         "id": int id,

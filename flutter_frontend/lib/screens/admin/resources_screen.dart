@@ -37,7 +37,9 @@ class _ResourcesScreenState extends State<ResourcesScreen> {
   }
 
   Future<void> _addOrEditResource(Resource? resource) async {
-    final result = await Get.to(() => ResourcesAddScreen(resource: resource));
+    final result = await Get.to<bool>(
+      () => ResourcesAddScreen(resource: resource),
+    );
 
     if (result != null && result) {
       setState(() {});
