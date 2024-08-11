@@ -20,6 +20,7 @@ class MainApp extends StatelessWidget {
     return CalendarControllerProvider(
       controller: EventController(),
       child: GetMaterialApp(
+        title: "Agendamentos GW",
         locale: const Locale("pt", "BR"),
         debugShowCheckedModeBanner: false,
         theme: ThemeData.from(

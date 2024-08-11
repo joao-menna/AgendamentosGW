@@ -162,7 +162,10 @@ class _AddScheduleScreenState extends State<AddScheduleScreen> {
       );
     } catch (err) {
       const snackBar = SnackBar(
-        content: Text("Não foi possível concluir a operação"),
+        content: Text(
+          "Não foi possível concluir a operação, "
+          "possivelmente esse recurso já está agendado",
+        ),
       );
 
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
