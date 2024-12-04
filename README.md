@@ -1,8 +1,12 @@
 # AgendamentosGW
-Trabalho do PAC III, Sistema de agendamento para recursos
+
+Trabalho do PAC - Projeto de Aprendizagem Colaborativa Extensionista do Curso de Engenharia de Software da Católica de Santa Catarina III e IV.
+
+Sistema de agendamento para recursos feito para agendar certos recursos, como Carrinhos de Chromebook, Tablets e etc para utilizar em alguma aula. O Sistema foi feito para a Escola Municipal Prefeito Geraldo Wetzel.
 
 ## Alunos
 
+- Andrey Garcia dos Santos
 - Graziela Torres
 - Henrique Maia Cardosa
 - João Miguel de Castro Menna
@@ -16,6 +20,7 @@ Trabalho do PAC III, Sistema de agendamento para recursos
 - PostgreSQL 16+
 - Node 18.19
 - Yarn (rode `npm i -g yarn` para instalar)
+- Flutter e suas dependências para desenvolvimento Desktop
 
 ### Instruções
 
@@ -70,3 +75,9 @@ PGPASSWORD="<segredo>"
 - Para o calendário foi usado o componente FullCalendar https://fullcalendar.io/
 - No agendamento não é possível editar um agendamento, apenas criar e excluir
 - Existem três CRUDs dentro do projeto: sendo eles, as telas de Recursos, Usuários e Turmas
+
+#### Front-end mobile (Flutter)
+
+- Entre com um terminal na pasta `.\AgendamentosGW\flutter_frontend`
+- Execute o comando `flutter pub get` para baixar todas as dependências
+- Rode o front-end com o comando `flutter run` ou rode pelo VSCode.
