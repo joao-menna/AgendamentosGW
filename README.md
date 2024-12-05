@@ -4,6 +4,8 @@ Trabalho do PAC - Projeto de Aprendizagem Colaborativa Extensionista do Curso de
 
 Sistema de agendamento para recursos feito para agendar certos recursos, como Carrinhos de Chromebook, Tablets e etc para utilizar em alguma aula. O Sistema foi feito para a Escola Municipal Prefeito Geraldo Wetzel.
 
+[Vídeo de apresentação](https://youtu.be/CHGcBB84i4M)
+
 ## Alunos
 
 - Andrey Garcia dos Santos
