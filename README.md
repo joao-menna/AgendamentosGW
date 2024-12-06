@@ -6,6 +6,10 @@ Sistema de agendamento para recursos feito para agendar certos recursos, como Ca
 
 [Vídeo de apresentação](https://youtu.be/CHGcBB84i4M)
 
+[Confluence](https://catolicapaces.atlassian.net/wiki/spaces/DDS/pages)
+
+[Jira](https://catolicapaces.atlassian.net/jira/software/projects/SCRUM/summary)
+
 
 ## Alunos
 
