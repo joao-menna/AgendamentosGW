@@ -6,6 +6,7 @@ Sistema de agendamento para recursos feito para agendar certos recursos, como Ca
 
 [Vídeo de apresentação](https://youtu.be/CHGcBB84i4M)
 
+
 ## Alunos
 
 - Andrey Garcia dos Santos
@@ -14,6 +15,61 @@ Sistema de agendamento para recursos feito para agendar certos recursos, como Ca
 - João Miguel de Castro Menna
 - Ricardo Gabriel Fialho Santos
 - Sophia Eggert Freire da Rocha
+
+
+## Prints de todas as telas
+
+Tela de login - Lugar onde entramos no sistema
+![login](docs/login.jpg)
+
+
+Drawer - Lugar onde temos links para outras telas do sistema
+![drawer](docs/gaveta.jpg)
+
+
+Tela de agendamento - calendário - Lugar onde visualizamos os agendamentos em modo calendário
+![agendamentos_calendario](docs/agendamentos_calendario.jpg)
+
+
+Tela de agendamentos - timeline - Lugar onde visualizamos os agendamentos em modo timeline (por dia)
+![agendamentos_timeline](docs/agendamentos_timeline.jpg)
+
+
+Tela de adicionar agendamentos - Lugar onde adicionamos agendamentos novos no calendário
+![agendamentos_adicionar](docs/agendamentos_adicionar.jpg)
+
+
+Tela de usuários - apenas admin - Lugar onde visualizamos todos os usuários do sistema
+![usuario](docs/usuario.jpg)
+
+
+Tela de adicionar usuários - apenas admin - Lugar onde adicionamos novos usuários
+![usuario_adicionar](docs/usuario_adicionar.jpg)
+
+
+Tela de turmas - apenas admin - Lugar onde visualizamos todas as turmas do sistema
+![turmas](docs/turmas.jpg)
+
+
+Tela de adicionar turmas - apenas admin - Lugar onde adicionamos novas turmas e recursos relacionados
+![turmas_adicionar](docs/turmas_adicionar.jpg)
+
+
+Tela de recursos - apenas admin - Lugar onde visualizamos todos os recursos do sistema
+![recursos](docs/recursos.jpg)
+
+
+Tela de adicionar recursos - apenas admin - Lugar onde adicionamos novos recursos
+![recursos_adicionar](docs/recursos_adicionar.jpg)
+
+
+Tela de bloqueios - apenas admin - Lugar onde visualizamos todos os bloqueios do sistema
+![bloqueios](docs/bloqueios.jpg)
+
+
+Tela de adicionar bloqueios - apenas admin - Lugar onde adicionamos novos bloqueios
+![bloqueios_adicionar](docs/bloqueios_adicionar.jpg)
+
 
 ## Como montar o ambiente de desenvolvimento
 
